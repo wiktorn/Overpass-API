@@ -48,7 +48,7 @@ docker run \
   -v /big/docker/overpass_db/:/db
   -p 12345:80 \
   -i -t \
-  --name overpass_monaco wiktorn/overpass
+  --name overpass_monaco wiktorn/overpass-api
 ```
 
 ## Overpass clone covering whole world
@@ -63,5 +63,5 @@ docker run \
   -p 12346:80
   -i -t
   --name overpass_world
-  overpass
+  wiktorn/overpass-api
 ```
