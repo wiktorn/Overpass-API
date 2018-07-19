@@ -45,7 +45,7 @@ docker run \
   -e OVERPASS_DIFF_URL=http://download.openstreetmap.fr/replication/europe/monaco/minute/ \
   -e OVERPASS_PLANET_SEQUENCE_ID=2946200 \
   -e OVERPASS_RULES_LOAD=10 \
-  -v /big/docker/overpass_db/:/db
+  -v /big/docker/overpass_db/:/db \
   -p 12345:80 \
   -i -t \
   --name overpass_monaco wiktorn/overpass-api
@@ -56,12 +56,12 @@ In this example Overpass instance will be initialized with data from main Overpa
 Data will be stored in /big/docker/overpass_clone_db/ directory on the host machine and API will be exposed on port 12346 on host machine.
 ```
 docker run \
-  -e OVERPASS_META=yes
-  -e OVERPASS_MODE=clone
-  -e OVERPASS_DIFF_URL=https://planet.openstreetmap.org/replication/minute/
-  -v /big/docker/overpass_clone_db/:/db
-  -p 12346:80
-  -i -t
-  --name overpass_world
+  -e OVERPASS_META=yes \
+  -e OVERPASS_MODE=clone \
+  -e OVERPASS_DIFF_URL=https://planet.openstreetmap.org/replication/minute/ \
+  -v /big/docker/overpass_clone_db/:/db \
+  -p 12346:80 \
+  -i -t \
+  --name overpass_world \
   wiktorn/overpass-api
 ```
