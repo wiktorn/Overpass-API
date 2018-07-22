@@ -60,9 +60,9 @@ RUN apt-get install --no-install-recommends --no-install-suggests -y \
 RUN mkdir /nginx && chown nginx:nginx /nginx && chown -R overpass:overpass /db
 COPY etc/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 COPY etc/nginx-overpass.conf /etc/nginx/nginx.conf
-COPY bin/apply_osc_to_db.sh bin/fetch_osc.sh bin/rules_loop.sh /app/bin/
+COPY bin/apply_osc_to_db.sh bin/fetch_osc.sh bin/rules_loop.sh bin/dispatcher_start.sh /app/bin/
 COPY docker-entrypoint.sh /app/
-RUN chmod a+x /app/docker-entrypoint.sh /app/bin/apply_osc_to_db.sh /app/bin/fetch_osc.sh /app/bin/rules_loop.sh
+RUN chmod a+x /app/docker-entrypoint.sh /app/bin/apply_osc_to_db.sh /app/bin/fetch_osc.sh /app/bin/rules_loop.sh /app/bin/dispatcher_start.sh
 VOLUME /db
 
 ENV OVERPASS_RULES_LOAD 1
