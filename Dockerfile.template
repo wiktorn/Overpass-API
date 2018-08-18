@@ -1,4 +1,4 @@
-FROM nginx:stable
+FROM nginx:1.14
 
 RUN addgroup overpass && adduser --home /db --disabled-password --gecos overpass --ingroup overpass overpass
 
