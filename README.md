@@ -65,3 +65,8 @@ docker run \
   --name overpass_world \
   wiktorn/overpass-api
 ```
+
+## How to use Overpass API after deploying using above examples
+Overpass API will be exposed on specified port (12345 or 12346 resp.) - as for example `http://localhost:12346/api/interpreter`.
+You may then use this directly as Overpass API url, or use it within [Overpass Turbo](http://overpass-turbo.eu/).
+Just go to settings and set Server to: `http://localhost:12345/api/`, now you will use your local Overpass instance for your queries.
