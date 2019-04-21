@@ -58,7 +58,7 @@ RUN apt-get update \
 COPY requirements.txt /app/
 
 RUN python3 -m venv /app/venv \
-    && /app/venv/pip install -r /app/requirements.txt
+    && /app/venv/bin/pip install -r /app/requirements.txt
 
 RUN mkdir /nginx && chown nginx:nginx /nginx && chown -R overpass:overpass /db
 
