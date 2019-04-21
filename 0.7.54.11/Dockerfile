@@ -70,7 +70,7 @@ COPY bin/update_overpass.sh bin/rules_loop.sh bin/dispatcher_start.sh /app/bin/
 
 COPY docker-entrypoint.sh /app/
 
-RUN chmod a+x /app/docker-entrypoint.sh /app/bin/apply_osc_to_db.sh /app/bin/fetch_osc.sh /app/bin/rules_loop.sh /app/bin/dispatcher_start.sh
+RUN chmod a+x /app/docker-entrypoint.sh /app/bin/update_overpass.sh /app/bin/rules_loop.sh /app/bin/dispatcher_start.sh
 
 ENV OVERPASS_RULES_LOAD 1
 
