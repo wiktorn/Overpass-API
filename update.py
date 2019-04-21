@@ -8,6 +8,9 @@ url = "http://dev.overpass-api.de/releases/"
 
 
 class VersionFinder(html.parser.HTMLParser):
+    def error(self, message):
+        raise RuntimeError(message)
+
     def __init__(self):
         super().__init__()
         self.versions = []
@@ -28,12 +31,19 @@ def main():
     with open("Dockerfile.template") as f:
         template = f.read()
     for ver in parser.versions:
+        if any((ver.startswith(x) for x in ('0.6', 'eta', '0.7.1', '0.7.2', '0.7.3', '0.7.4', '0.7.50', '0.7.52'))) or \
+                ver == '0.7':
+            # ignore old releases
+            continue
+        if os.path.exists(ver):
+            shutil.rmtree(ver)
         os.mkdir(ver)
         with open(pathlib.Path(ver) / "Dockerfile", "w+") as f:
             f.write(template.format(version=ver))
         for i in ("etc", "bin"):
-          shutil.copytree(i, pathlib.Path(ver) / i)
+            shutil.copytree(i, pathlib.Path(ver) / i)
         shutil.copyfile("docker-entrypoint.sh", pathlib.Path(ver) / "docker-entrypoint.sh")
+
 
 if __name__ == '__main__':
     main()
