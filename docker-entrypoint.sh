@@ -29,10 +29,10 @@ if [ ! -d /db/db ] ; then
         && echo "Database created. Now updating it." && (
             ! /app/venv/bin/pyosmium-get-changes -O /db/planet.osm.bz2 --server $OVERPASS_DIFF_URL -o /db/changes.osm -f /db/replicate_id
             OSMIUM_STATUS=$?
-            if [ $OSMIUM_STATUS -eq 1 ];
+            if [ $OSMIUM_STATUS -eq 1 ]; then
                 echo "There are still some updates remainging"
             fi
-            if [ $OSMIUM_STATUS -eq 2 ];
+            if [ $OSMIUM_STATUS -eq 2 ]; then
                 echo "Failure downloading updates"
                 exit 0
             fi
