@@ -13,7 +13,7 @@
 
     while `true` ; do
         (
-            ! /app/venv/bin/pyosmium-get-changes -O /db/planet.osm.bz2 --server $OVERPASS_DIFF_URL -o /db/changes.osm -f /db/replicate_id
+            ! /app/venv/bin/pyosmium-get-changes --server $OVERPASS_DIFF_URL -o /db/changes.osm -f /db/replicate_id
             OSMIUM_STATUS=$?
             if [ $OSMIUM_STATUS -eq 1 ]; then
                 echo "There are still some updates remainging"
