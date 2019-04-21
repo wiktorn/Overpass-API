@@ -36,7 +36,7 @@ if [ ! -d /db/db ] ; then
                 echo "Failure downloading updates"
                 exit 0
             fi
-            cat /db/changes.osm | /app/bin/update_database --db-dir=/db/db $META --compression-method=$OVERPASS_COMPRESSION
+            cat /db/changes.osm | /app/bin/update_database --db-dir=/db/db $META --compression-method=$OVERPASS_COMPRESSION  2>&1 | tee -a /db/changes.log
         ) \
         && rm /db/planet /db/changes.osm \
         && cp -r /app/etc/rules /db/db \
