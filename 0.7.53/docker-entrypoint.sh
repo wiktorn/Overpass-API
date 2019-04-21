@@ -27,7 +27,7 @@ if [ ! -d /db/db ] ; then
         lftp -c "get -c \"$OVERPASS_PLANET_URL\" -o /db/planet.osm.bz2; exit" \
         && /app/bin/init_osm3s.sh /db/planet.osm.bz2 /db/db /app "--meta=$OVERPASS_META" "--compression-method=$OVERPASS_COMPRESSION" \
         && /app/venv/bin/pyosmium-get-changes -O /db/planet.osm.bz2 --server $OVERPASS_DIFF_URL -o /db/changes.osm -f /db/replicate_id \
-        && cat /db/changes.osm | /app/bin/update_database --db-dir=/db/db $META --compression-method=$OVERPASS_COMPRESSION
+        && cat /db/changes.osm | /app/bin/update_database --db-dir=/db/db $META --compression-method=$OVERPASS_COMPRESSION \
         && rm /db/planet /db/changes.osm \
         && cp -r /app/etc/rules /db/db \
         && chown -R overpass:overpass /db \
