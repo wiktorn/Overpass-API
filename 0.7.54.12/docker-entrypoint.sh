@@ -26,8 +26,18 @@ if [ ! -d /db/db ] ; then
     if [ "$OVERPASS_MODE" = "init" ]; then
         lftp -c "get -c \"$OVERPASS_PLANET_URL\" -o /db/planet.osm.bz2; exit" \
         && /app/bin/init_osm3s.sh /db/planet.osm.bz2 /db/db /app "--meta=$OVERPASS_META" "--compression-method=$OVERPASS_COMPRESSION" \
-        && /app/venv/bin/pyosmium-get-changes -O /db/planet.osm.bz2 --server $OVERPASS_DIFF_URL -o /db/changes.osm -f /db/replicate_id \
-        && cat /db/changes.osm | /app/bin/update_database --db-dir=/db/db $META --compression-method=$OVERPASS_COMPRESSION \
+        && echo "Database created. Now updating it." && (
+            ! /app/venv/bin/pyosmium-get-changes -O /db/planet.osm.bz2 --server $OVERPASS_DIFF_URL -o /db/changes.osm -f /db/replicate_id
+            OSMIUM_STATUS=$?
+            if [ $OSMIUM_STATUS -eq 1 ];
+                echo "There are still some updates remainging"
+            fi
+            if [ $OSMIUM_STATUS -eq 2 ];
+                echo "Failure downloading updates"
+                exit 0
+            fi
+            cat /db/changes.osm | /app/bin/update_database --db-dir=/db/db $META --compression-method=$OVERPASS_COMPRESSION
+        ) \
         && rm /db/planet /db/changes.osm \
         && cp -r /app/etc/rules /db/db \
         && chown -R overpass:overpass /db \
