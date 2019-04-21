@@ -43,6 +43,7 @@ def main():
         for i in ("etc", "bin"):
             shutil.copytree(i, pathlib.Path(ver) / i)
         shutil.copyfile("docker-entrypoint.sh", pathlib.Path(ver) / "docker-entrypoint.sh")
+        shutil.copyfile("requirements.txt", pathlib.Path(ver) / "requirements.txt")
 
 
 if __name__ == '__main__':

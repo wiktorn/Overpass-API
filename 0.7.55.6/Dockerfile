@@ -66,7 +66,7 @@ COPY etc/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 COPY etc/nginx-overpass.conf /etc/nginx/nginx.conf
 
-COPY bin/apply_osc_to_db.sh bin/fetch_osc.sh bin/rules_loop.sh bin/dispatcher_start.sh /app/bin/
+COPY bin/update_overpass.sh bin/rules_loop.sh bin/dispatcher_start.sh /app/bin/
 
 COPY docker-entrypoint.sh /app/
 
