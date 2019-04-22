@@ -27,6 +27,8 @@
                     echo "Failure downloading updates"
                     exit 0
                 fi
+            else
+                echo "/db/diffs/changes.osm exists. Trying to apply again."
             fi
             /app/bin/update_from_dir --osc-dir=/db/diffs/ $META
             rm /db/diffs/changes.osm
