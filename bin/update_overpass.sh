@@ -11,7 +11,9 @@
         META=""
     fi
 
-    mkdir /db/diffs
+    if [ ! -d /db/diffs ] ; then
+        mkdir /db/diffs
+    fi
 
     while `true` ; do
         (
@@ -26,7 +28,7 @@
                     exit 0
                 fi
             fi
-            /app/bin/update_from_dir --osc-dir=/db/diffs/ --db-dir=/db/db $META
+            /app/bin/update_from_dir --osc-dir=/db/diffs/ $META
             rm /db/diffs/changes.osm
         )
         sleep 60
