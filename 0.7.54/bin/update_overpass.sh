@@ -11,9 +11,11 @@
         META=""
     fi
 
+    mkdir /db/diffs
+
     while `true` ; do
         (
-            if [! -e  /db/diffs/changes.osm ] ; then
+            if [ ! -e  /db/diffs/changes.osm ] ; then
                 ! /app/venv/bin/pyosmium-get-changes --server $OVERPASS_DIFF_URL -o /db/diffs/changes.osm -f /db/replicate_id
                 OSMIUM_STATUS=$?
                 if [ $OSMIUM_STATUS -eq 1 ]; then
