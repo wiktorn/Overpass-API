@@ -24,7 +24,7 @@
                     exit 0
                 fi
             fi
-            /app/bin/update_from_dir --osc-dir /db/diffs/ --db-dir=/db/db $META
+            /app/bin/update_from_dir --osc-dir=/db/diffs/ --db-dir=/db/db $META
             rm /db/diffs/changes.osm
         )
         sleep 60
