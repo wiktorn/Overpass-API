@@ -31,11 +31,6 @@ DIFF_FILE=/db/diffs/changes.osm
             /app/venv/bin/pyosmium-get-changes -vvv $1 --server "${OVERPASS_DIFF_URL}" -o "${DIFF_FILE}" -f /db/replicate_id
             OSMIUM_STATUS=$?
             set -e
-            #if [[ "${OSMIUM_STATUS}" -eq 2 ]]; then
-            #    echo "Failure downloading updates"
-            #    sleep 60
-            #    continue
-            #fi
         else
             echo "/db/diffs/changes.osm exists. Trying to apply again."
         fi
@@ -43,13 +38,13 @@ DIFF_FILE=/db/diffs/changes.osm
         cat "${DIFF_FILE}" | /app/bin/update_database "${DB_DIR}" "${META}" --compression-method="${OVERPASS_COMPRESSION}" --map-compression-method="${OVERPASS_COMPRESSION}"
         rm "${DIFF_FILE}"
 
-        #if [[ "${OSMIUM_STATUS}" -eq 1 ]]; then
-        #    echo "There are still some updates remaining"
-        #    continue
-        #else
-        #    echo "Update finished with status code: ${OSMIUM_STATUS}"
-        #    break
-        #fi
+        if [[ "${OSMIUM_STATUS}" -eq 3 ]]; then
+            echo "Update finished with status code: ${OSMIUM_STATUS}"
+            break
+        else
+            echo "There are still some updates remaining"
+            continue
+        fi
         # for now, until pyosmium-get-changes status code gets cleared
         break
     done
