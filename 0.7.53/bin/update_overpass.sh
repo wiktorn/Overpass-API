@@ -30,7 +30,12 @@
             else
                 echo "/db/diffs/changes.osm exists. Trying to apply again."
             fi
-            /app/bin/update_from_dir --osc-dir=/db/diffs/ $META
+            if /app/bin/dispatcher --show-dir ; then
+                DB_DIR=""
+            else
+                DB_DIR="--db-dir=/db/db"
+            fi
+            /app/bin/update_from_dir --osc-dir=/db/diffs/ $META || /app/bin/update_from_dir --osc-dir=/db/diffs/ $META $DB_DIR
             rm /db/diffs/changes.osm
         )
         sleep 60
