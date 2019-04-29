@@ -5,6 +5,7 @@ RUN addgroup overpass && adduser --home /db --disabled-password --gecos overpass
 ADD http://dev.overpass-api.de/releases/osm-3s_v0.7.55.2.tar.gz /app/src.tar.gz
 
 RUN apt-get update \
+    && apt-get upgrade -y \
     && apt-get install --no-install-recommends --no-install-suggests -y \
         autoconf \
         automake \
