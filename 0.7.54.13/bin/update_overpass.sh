@@ -27,10 +27,18 @@ DIFF_FILE=/db/diffs/changes.osm
 
     while `true` ; do
         if [[ ! -e  /db/diffs/changes.osm ]] ; then
-            set +e
-            /app/venv/bin/pyosmium-get-changes -vvv $1 --server "${OVERPASS_DIFF_URL}" -o "${DIFF_FILE}" -f /db/replicate_id
-            OSMIUM_STATUS=$?
-            set -e
+            # if /db/replicate_id exists, do not pass $1 arg (which could contain -O arg pointing to planet file
+            if [[ -s /db/replicate_id ]] ; then
+                set +e
+                /app/venv/bin/pyosmium-get-changes -vvv --server "${OVERPASS_DIFF_URL}" -o "${DIFF_FILE}" -f /db/replicate_id
+                OSMIUM_STATUS=$?
+                set -e
+            else
+                set +e
+                /app/venv/bin/pyosmium-get-changes -vvv $1 --server "${OVERPASS_DIFF_URL}" -o "${DIFF_FILE}" -f /db/replicate_id
+                OSMIUM_STATUS=$?
+                set -e
+            fi
         else
             echo "/db/diffs/changes.osm exists. Trying to apply again."
         fi

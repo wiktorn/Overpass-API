@@ -12,6 +12,22 @@ else
     META="--meta"
 fi
 
+for f in /docker-entrypoint-initdb.d/*; do
+    case "$f" in
+        *.sh)
+            if [[ -x "$f" ]]; then
+                echo "$0: running $f"
+                "$f"
+            else
+                echo "$0: sourcing $f"
+                . "$f"
+            fi
+            ;;
+        *)        echo "$0: ignoring $f" ;;
+    esac
+    echo
+done
+
 
 if [[ ! -d /db/db ]] ; then
     if [[ "$OVERPASS_MODE" = "clone" ]]; then

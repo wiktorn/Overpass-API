@@ -61,7 +61,7 @@ COPY requirements.txt /app/
 RUN python3 -m venv /app/venv \
     && /app/venv/bin/pip install -r /app/requirements.txt
 
-RUN mkdir /nginx && chown nginx:nginx /nginx && chown -R overpass:overpass /db
+RUN mkdir /nginx /docker-entrypoint-initdb.d && chown nginx:nginx /nginx && chown -R overpass:overpass /db
 
 COPY etc/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
