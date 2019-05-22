@@ -43,7 +43,7 @@ DIFF_FILE=/db/diffs/changes.osm
             echo "/db/diffs/changes.osm exists. Trying to apply again."
         fi
         echo /app/bin/update_database "${DB_DIR}" "${META}" --compression-method="${OVERPASS_COMPRESSION}" --map-compression-method="${OVERPASS_COMPRESSION}"
-        cat "${DIFF_FILE}" | /app/bin/update_database "${DB_DIR}" "${META}" --compression-method="${OVERPASS_COMPRESSION}" --map-compression-method="${OVERPASS_COMPRESSION}"
+        cat "${DIFF_FILE}" | /app/bin/update_database "${DB_DIR}" "${META}" --compression-method="${OVERPASS_COMPRESSION}" --map-compression-method="${OVERPASS_COMPRESSION}"  --flush-size="${OVERPASS_FLUSH_SIZE}"
         rm "${DIFF_FILE}"
 
         if [[ "${OSMIUM_STATUS}" -eq 3 ]]; then

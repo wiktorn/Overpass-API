@@ -5,6 +5,7 @@ shopt -s nullglob
 OVERPASS_META=${OVERPASS_META:-no}
 OVERPASS_MODE=${OVERPASS_MODE:-clone}
 OVERPASS_COMPRESSION=${OVERPASS_COMPRESSION:-gz}
+OVERPASS_FLUSH_SIZE=${OVERPASS_FLUSH_SIZE:-16}
 
 if [[ "$OVERPASS_META" == "attic" ]] ; then
     META="--keep-attic"
@@ -41,7 +42,7 @@ if [[ ! -d /db/db ]] ; then
 
     if [[ "$OVERPASS_MODE" = "init" ]]; then
         lftp -c "get -c \"$OVERPASS_PLANET_URL\" -o /db/planet.osm.bz2; exit" \
-        && /app/bin/init_osm3s.sh /db/planet.osm.bz2 /db/db /app "--meta=$OVERPASS_META" "--compression-method=$OVERPASS_COMPRESSION --map-compression-method=$OVERPASS_COMPRESSION" \
+        && /app/bin/init_osm3s.sh /db/planet.osm.bz2 /db/db /app "--meta=${OVERPASS_META}" "--compression-method=${OVERPASS_COMPRESSION} --map-compression-method=${OVERPASS_COMPRESSION} --flush-size=${OVERPASS_FLUSH_SIZE}" \
         && echo "Database created. Now updating it." \
         && cp -r /app/etc/rules /db/db \
         && chown -R overpass:overpass /db \
