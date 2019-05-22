@@ -8,9 +8,9 @@ DIFF_FILE=/db/diffs/changes.osm
 (
     set -e
     if [[ "${OVERPASS_META}" == "attic" ]] ; then
-        META="--keep-attic"
+        META=" --keep-attic"
     elif [[ "${OVERPASS_META}" == "yes" ]] ; then
-        META="--meta"
+        META=" --meta"
     else
         META=""
     fi
@@ -42,8 +42,8 @@ DIFF_FILE=/db/diffs/changes.osm
         else
             echo "/db/diffs/changes.osm exists. Trying to apply again."
         fi
-        echo /app/bin/update_database "${DB_DIR}" "${META}" --compression-method="${OVERPASS_COMPRESSION}" --map-compression-method="${OVERPASS_COMPRESSION}"
-        cat "${DIFF_FILE}" | /app/bin/update_database "${DB_DIR}" "${META}" --compression-method="${OVERPASS_COMPRESSION}" --map-compression-method="${OVERPASS_COMPRESSION}"
+        echo /app/bin/update_database "${DB_DIR}" --compression-method="${OVERPASS_COMPRESSION}" --map-compression-method="${OVERPASS_COMPRESSION}""${META}"
+        cat "${DIFF_FILE}" | /app/bin/update_database "${DB_DIR}" --compression-method="${OVERPASS_COMPRESSION}" --map-compression-method="${OVERPASS_COMPRESSION}""${META}"
         rm "${DIFF_FILE}"
 
         if [[ "${OSMIUM_STATUS}" -eq 3 ]]; then
