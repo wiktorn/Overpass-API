@@ -7,12 +7,11 @@ DIFF_FILE=/db/diffs/changes.osm
 
 (
     set -e
+    UPDATE_ARGS=("--compression-method=${OVERPASS_COMPRESSION}" "--map-compression-method=${OVERPASS_COMPRESSION}" "--flush-size=${OVERPASS_FLUSH_SIZE}")
     if [[ "${OVERPASS_META}" == "attic" ]] ; then
-        META="--keep-attic"
+        UPDATE_ARGS+=("--keep-attic")
     elif [[ "${OVERPASS_META}" == "yes" ]] ; then
-        META="--meta"
-    else
-        META=""
+        UPDATE_ARGS+=("--meta")
     fi
 
     if [[ ! -d /db/diffs ]] ; then
@@ -20,9 +19,7 @@ DIFF_FILE=/db/diffs/changes.osm
     fi
 
     if /app/bin/dispatcher --show-dir | grep -q File_Error ; then
-        DB_DIR="--db-dir=/db/db"
-    else
-        DB_DIR=""
+        UPDATE_ARGS+=("--db-dir=/db/db")
     fi
 
     while `true` ; do
@@ -42,8 +39,9 @@ DIFF_FILE=/db/diffs/changes.osm
         else
             echo "/db/diffs/changes.osm exists. Trying to apply again."
         fi
-        echo /app/bin/update_database "${DB_DIR}" "${META}" --compression-method="${OVERPASS_COMPRESSION}" --map-compression-method="${OVERPASS_COMPRESSION}"
-        cat "${DIFF_FILE}" | /app/bin/update_database "${DB_DIR}" "${META}" --compression-method="${OVERPASS_COMPRESSION}" --map-compression-method="${OVERPASS_COMPRESSION}"  --flush-size="${OVERPASS_FLUSH_SIZE}"
+
+        echo /app/bin/update_database "${UPDATE_ARGS[@]}"
+        cat "${DIFF_FILE}" | /app/bin/update_database "${UPDATE_ARGS[@]}"
         rm "${DIFF_FILE}"
 
         if [[ "${OSMIUM_STATUS}" -eq 3 ]]; then
