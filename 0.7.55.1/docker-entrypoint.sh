@@ -34,7 +34,7 @@ if [[ ! -d /db/db ]] ; then
     if [[ "$OVERPASS_MODE" = "clone" ]]; then
         mkdir -p /db/db \
         && /app/bin/download_clone.sh --db-dir=/db/db --source=http://dev.overpass-api.de/api_drolbr/ --meta="${OVERPASS_META}" \
-        && cp /db/db/replicate_id /db/replicate_id
+        && cp /db/db/replicate_id /db/replicate_id \
         && cp -r /app/etc/rules /db/db \
         && chown -R overpass:overpass /db \
         && echo "Overpass ready, you can start your container with docker start"
