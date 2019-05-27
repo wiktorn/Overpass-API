@@ -4,6 +4,7 @@
 # one for updating to current state - second called by first
 
 DIFF_FILE=/db/diffs/changes.osm
+OVERPASS_COMPRESSION=${OVERPASS_COMPRESSION:-gz}
 
 (
     set -e
