@@ -4,7 +4,10 @@
 # one for updating to current state - second called by first
 
 DIFF_FILE=/db/diffs/changes.osm
+
+OVERPASS_META=${OVERPASS_META:-no}
 OVERPASS_COMPRESSION=${OVERPASS_COMPRESSION:-gz}
+OVERPASS_FLUSH_SIZE=${OVERPASS_FLUSH_SIZE:-16}
 
 (
     set -e
