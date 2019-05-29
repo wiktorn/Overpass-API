@@ -27,16 +27,17 @@ OVERPASS_FLUSH_SIZE=${OVERPASS_FLUSH_SIZE:-16}
     fi
 
     while `true` ; do
-        if [[ ! -e  /db/diffs/changes.osm ]] ; then
+        # if DIFF_FILE doesn't exit, try fetch new data
+        if [[ ! -e  ${DIFF_FILE} ]] ; then
             # if /db/replicate_id exists, do not pass $1 arg (which could contain -O arg pointing to planet file
             if [[ -s /db/replicate_id ]] ; then
                 set +e
-                /app/venv/bin/pyosmium-get-changes -vvv --server "${OVERPASS_DIFF_URL}" -o "${DIFF_FILE}" -f /db/replicate_id
+                /app/venv/bin/pyosmium-get-changes -vvv --cookie /db/cookie.jar --server "${OVERPASS_DIFF_URL}" -o "${DIFF_FILE}" -f /db/replicate_id
                 OSMIUM_STATUS=$?
                 set -e
             else
                 set +e
-                /app/venv/bin/pyosmium-get-changes -vvv $1 --server "${OVERPASS_DIFF_URL}" -o "${DIFF_FILE}" -f /db/replicate_id
+                /app/venv/bin/pyosmium-get-changes -vvv $1 --cookie /db/cookie.jar --server "${OVERPASS_DIFF_URL}" -o "${DIFF_FILE}" -f /db/replicate_id
                 OSMIUM_STATUS=$?
                 set -e
             fi
@@ -44,8 +45,19 @@ OVERPASS_FLUSH_SIZE=${OVERPASS_FLUSH_SIZE:-16}
             echo "/db/diffs/changes.osm exists. Trying to apply again."
         fi
 
-        echo /app/bin/update_database "${UPDATE_ARGS[@]}"
-        cat "${DIFF_FILE}" | /app/bin/update_database "${UPDATE_ARGS[@]}"
+        # if DIFF_FILE is non-empty, try to process it
+        if [[ -s ${DIFF_FILE} ]] ; then
+            VERSION=$(osmium fileinfo -e -g data.timestamp.last "${DIFF_FILE}")
+            if [[ ! -z "${VERSION// }" ]] ; then
+              echo /app/bin/update_database --version="${VERSION}" "${UPDATE_ARGS[@]}"
+              cat "${DIFF_FILE}" | /app/bin/update_database --version="${VERSION}" "${UPDATE_ARGS[@]}"
+            else
+              echo "Empty version, skipping file"
+              cat "${DIFF_FILE}"
+            fi
+        fi
+
+        # processed successfuly, remove
         rm "${DIFF_FILE}"
 
         if [[ "${OSMIUM_STATUS}" -eq 3 ]]; then
@@ -55,7 +67,6 @@ OVERPASS_FLUSH_SIZE=${OVERPASS_FLUSH_SIZE:-16}
             echo "There are still some updates remaining"
             continue
         fi
-        # for now, until pyosmium-get-changes status code gets cleared
         break
     done
 ) 2>&1 | tee -a /db/changes.log

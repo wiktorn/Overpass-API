@@ -1,1 +1,1 @@
-osmium
+osmium>2.15.2

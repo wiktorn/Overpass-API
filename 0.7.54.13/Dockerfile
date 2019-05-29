@@ -12,10 +12,10 @@ RUN apt-get update \
         bash \
         bzip2 \
         ca-certificates \
+        curl \
         expat \
         fcgiwrap \
         g++ \
-        lftp \
         libexpat1-dev \
         liblz4-1 \
         liblz4-dev \
