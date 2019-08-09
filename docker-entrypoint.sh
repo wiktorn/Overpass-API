@@ -32,7 +32,7 @@ for f in /docker-entrypoint-initdb.d/*; do
 done
 
 
-if [[ ! -d /db/db/diffs ]] ; then
+if [[ ! -d /db/diffs ]] ; then
     if [[ "$OVERPASS_MODE" = "clone" ]]; then
         mkdir -p /db/db \
         && /app/bin/download_clone.sh --db-dir=/db/db --source=http://dev.overpass-api.de/api_drolbr/ --meta="${OVERPASS_META}" \
