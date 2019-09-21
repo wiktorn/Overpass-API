@@ -2,8 +2,6 @@ FROM nginx:1.14
 
 RUN addgroup overpass && adduser --home /db --disabled-password --gecos overpass --ingroup overpass overpass
 
-ADD http://dev.overpass-api.de/releases/osm-3s_v0.7.55.5.tar.gz /app/src.tar.gz
-
 RUN apt-get update \
     && apt-get upgrade -y \
     && apt-get install --no-install-recommends --no-install-suggests -y \
@@ -55,6 +53,8 @@ RUN apt-get update \
     && cp -r /app/src/rules /app/etc/rules \
     && rm -rf /app/src /app/src.tar.gz \
     && rm -rf /var/lib/apt/lists/*
+
+ADD http://dev.overpass-api.de/releases/osm-3s_v0.7.55.5.tar.gz /app/src.tar.gz
 
 COPY requirements.txt /app/
 
