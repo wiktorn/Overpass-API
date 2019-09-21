@@ -28,7 +28,7 @@ file downloads etc.
 After initialization is finished Docker container will stop. Once you start it again (with `docker start` command) it will start
 downloading minute diffs, applying them to database and serving API requests.
 
-Container exposes port 80.
+Container exposes port 80, map it to your host port using `-p`. Overpass API is available at `/api/interpreter`.
 
 Container includes binaries of pyosmium (in `/app/venv/bin/`) and osmium-tool (in `/usr/bin`)
 
