@@ -31,7 +31,7 @@ for f in /docker-entrypoint-initdb.d/*; do
     echo
 done
 
-if [[ ! -d /db/db ]] ; then
+if [[ ! -f /db/init_done ]] ; then
     echo "No database directory. Initializing"
     echo "# Netscape HTTP Cookie File" > /db/cookie.jar
     echo "${OVERPASS_COOKIE_JAR_CONTENTS}" >> /db/cookie.jar
@@ -43,6 +43,7 @@ if [[ ! -d /db/db ]] ; then
         && cp /db/db/replicate_id /db/replicate_id \
         && cp -r /app/etc/rules /db/db \
         && chown -R overpass:overpass /db \
+        && touch /db/init_done \
         && echo "Overpass ready, you can start your container with docker start"
         exit
     fi
@@ -68,6 +69,7 @@ if [[ ! -d /db/db ]] ; then
                 && chown -R overpass:overpass /db \
                 && echo "Updating" \
                 && /app/bin/update_overpass.sh "-O /db/planet.osm.bz2" \
+                && touch /db/init_done \
                 && rm /db/planet.osm.bz2 \
                 && chown -R overpass:overpass /db \
                 && echo "Overpass ready, you can start your container with docker start" \
