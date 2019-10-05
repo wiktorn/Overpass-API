@@ -1,8 +1,4 @@
-FROM nginx:1.14
-
-RUN addgroup overpass && adduser --home /db --disabled-password --gecos overpass --ingroup overpass overpass
-
-ADD http://dev.overpass-api.de/releases/osm-3s_v0.7.55.2.tar.gz /app/src.tar.gz
+FROM nginx:1.14 AS builder
 
 RUN apt-get update \
     && apt-get upgrade -y \
@@ -28,8 +24,11 @@ RUN apt-get update \
         supervisor \
         wget \
         zlib1g \
-        zlib1g-dev \
-    && mkdir -p /app/src \
+        zlib1g-dev
+
+ADD http://dev.overpass-api.de/releases/osm-3s_v0.7.55.2.tar.gz /app/src.tar.gz
+
+RUN  mkdir -p /app/src \
     && cd /app/src \
     && tar -x -z --strip-components 1 -f ../src.tar.gz \
     && autoscan \
@@ -40,21 +39,32 @@ RUN apt-get update \
     && autoconf \
     && CXXFLAGS='-O2' CFLAGS='-O2' ./configure --prefix=/app --enable-lz4 \
     && make -j $(grep -c ^processor /proc/cpuinfo) dist install clean \
-    && apt-get remove -y \
-        autoconf \
-        automake \
-        libexpat1-dev \
-        g++ \
-        libtool \
-        liblz4-dev \
-        m4 \
-        make \
-        zlib1g-dev \
-    && apt-get autoremove -y \
     && mkdir -p /db/diffs /app/etc \
     && cp -r /app/src/rules /app/etc/rules \
-    && rm -rf /app/src /app/src.tar.gz \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /app/src /app/src.tar.gz
+
+FROM nginx:1.14
+
+RUN apt-get update \
+    && apt-get upgrade -y \
+    && apt-get install --no-install-recommends --no-install-suggests -y \
+        bash \
+        bzip2 \
+        ca-certificates \
+        curl \
+        expat \
+        fcgiwrap \
+        liblz4-1 \
+        osmium-tool \
+        python3 \
+        python3-venv \
+        supervisor \
+        wget \
+        zlib1g
+
+COPY --from=builder /app /app
+
+RUN addgroup overpass && adduser --home /db --disabled-password --gecos overpass --ingroup overpass overpass
 
 COPY requirements.txt /app/
 
