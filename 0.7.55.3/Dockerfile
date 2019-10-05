@@ -60,7 +60,8 @@ RUN apt-get update \
         python3-venv \
         supervisor \
         wget \
-        zlib1g
+        zlib1g \
+    && rm -rf /var/lib/apt/lists/*
 
 COPY --from=builder /app /app
 
