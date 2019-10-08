@@ -35,7 +35,7 @@ fi
       /app/venv/bin/python /app/bin/oauth_cookie_client.py -o /db/cookie.jar -s /secrets/oauth-settings.json --format netscape
     fi
 
-    while `true` ; do
+    while true ; do
         # if DIFF_FILE doesn't exit, try fetch new data
         if [[ ! -e  ${DIFF_FILE} ]] ; then
             # if /db/replicate_id exists, do not pass $1 arg (which could contain -O arg pointing to planet file

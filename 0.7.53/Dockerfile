@@ -81,12 +81,12 @@ COPY etc/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 COPY etc/nginx-overpass.conf /etc/nginx/nginx.conf
 
-COPY bin/update_overpass.sh bin/update_overpass_loop.sh bin/rules_loop.sh bin/dispatcher_start.sh  /app/bin/
+COPY bin/update_overpass.sh bin/update_overpass_loop.sh bin/rules_loop.sh bin/dispatcher_start.sh bin/start_fcgiwarp.sh /app/bin/
 
 COPY docker-entrypoint.sh /app/
 
 RUN chmod a+rx /app/docker-entrypoint.sh /app/bin/update_overpass.sh /app/bin/rules_loop.sh /app/bin/dispatcher_start.sh \
-    /app/bin/oauth_cookie_client.py
+    /app/bin/oauth_cookie_client.py /app/bin/start_fcgiwarp.sh
 
 ENV OVERPASS_RULES_LOAD 1
 
