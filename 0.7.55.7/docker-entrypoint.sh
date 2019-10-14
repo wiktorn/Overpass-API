@@ -50,7 +50,7 @@ if [[ ! -f /db/init_done ]] ; then
 
     if [[ "$OVERPASS_MODE" = "init" ]]; then
         while `true` ; do
-          CURL_STATUS_CODE=$(curl -b /db/cookie.jar -o /db/planet.osm.bz2 -w "%{http_code}" "${OVERPASS_PLANET_URL}")
+          CURL_STATUS_CODE=$(curl -L -b /db/cookie.jar -o /db/planet.osm.bz2 -w "%{http_code}" "${OVERPASS_PLANET_URL}")
           case "${CURL_STATUS_CODE}" in
             429)
               echo "Server responded with 429 Too many requests. Trying again in 5 minutes..."
