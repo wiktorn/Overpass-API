@@ -9,6 +9,11 @@ OVERPASS_META=${OVERPASS_META:-no}
 OVERPASS_COMPRESSION=${OVERPASS_COMPRESSION:-gz}
 OVERPASS_FLUSH_SIZE=${OVERPASS_FLUSH_SIZE:-16}
 
+if [ -z "$OVERPASS_DIFF_URL" ] ; then
+  echo "No OVERPASS_DIFF_URL set. Skipping update."
+  exit 0;
+fi
+
 (
     set -e
     UPDATE_ARGS=("--compression-method=${OVERPASS_COMPRESSION}" "--map-compression-method=${OVERPASS_COMPRESSION}" "--flush-size=${OVERPASS_FLUSH_SIZE}")
