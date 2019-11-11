@@ -13,7 +13,8 @@ areas. Set it to 1, and script will sleep 99x times longer than it works, set it
 execution, set it to 100, and script will sleep 3 seconds between each execution. Defaults to 1.
 * `OVERPASS_UPDATE_SLEEP` - integer, how long is the delay between updates (seconds)
 * `OVERPASS_COOKIE_JAR_CONTENTS` - cookie-jar compatible content to be used when fetching planet.osm file and updates
-* `OVERPASS_PLANET_PREPROCESS` - commands to be run before passing planet.osm file to `update_database`, e.g. conversion from pbf to osm.bz2 using osmium 
+* `OVERPASS_PLANET_PREPROCESS` - commands to be run before passing planet.osm file to `update_database`, e.g. conversion from pbf to osm.bz2 using osmium
+* `USE_OAUTH_COOKIE_CLIENT` - set to `yes` if you want to use oauth_cookie_client to update cookies before each update. Settings are read from /secrets/oauth-settings.json. Read the documentation [here](https://github.com/geofabrik/sendfile_osm_oauth_protector/blob/master/doc/client.md) 
 
 Image works in two modes `clone` or `init`. This affects how the instance gets initialized. If the mode is set to `clone`
 then data is copied from http://dev.overpass-api.de/api_drolbr/ and then updated from diffs. This will result in Overpass instance
@@ -70,16 +71,16 @@ docker run \
 ## Overpass instance covering part of the world using cookie
 In this example Overpass instance will be initialized with planet file for Monaco downloaded from internal Geofabrik server. 
 Data will be stored in folder `/big/docker/overpass_db/` on the host machine. Overpass will be available on port 12347 on host machine.
-You need to login to internal Geofabrik server and get OAuth token and update `OVERPASS_COOKIE_JAR_CONTENTS`.
-Server will be checked once an hour for updates.
 
-To get `OVERPASS_COOKIE_JAR_CONTENTS` use browser to navigate to https://osm-internal.download.geofabrik.de/ and login with your OSM
-username. Server will set a cookie `gf_download_oauth` in following format:
-
-`login|2018-04-12|...`
-
-Where in place of `...` there is longish string (~275 characters). Whole cookie value is of our interest. Use it to replace OAUTH_TOKEN in example below.
-Please keep in mind, that following example uses Bash string expression of `$'...'` to properly encode all control characters.
+Prepare file with your credentials `/home/osm/oauth-settings.json`:
+```json
+{
+  "user": "your-username",
+  "password": "your-secure-password",
+  "osm_host": "https://www.openstreetmap.org",
+  "consumer_url": "https://osm-internal.download.geofabrik.de/get_cookie"
+}
+```
 
 Because Geofabrik provides only PBF extracts with metadata, `osmium` is used in `OVERPASS_PLANET_PREPROCESS` to convert
 `pbf` file to `osm.bz2` that's used by Overpass.
@@ -90,17 +91,16 @@ docker run \
     -e OVERPASS_MODE=init \
     -e OVERPASS_PLANET_URL=https://osm-internal.download.geofabrik.de/europe/monaco-latest-internal.osm.pbf \
     -e OVERPASS_DIFF_URL=https://osm-internal.download.geofabrik.de/europe/monaco-updates/ \
-    -e OVERPASS_COOKIE_JAR_CONTENTS=$'.osm-internal.download.geofabrik.de\tTRUE\t/\tTRUE\t2147483647\tgf_download_oauth\tOAUTH_TOKEN\n' \
     -e OVERPASS_RULES_LOAD=10 \
     -e OVERPASS_COMPRESSION=gz \
     -e OVERPASS_UPDATE_SLEEP=3600 \
     -e OVERPASS_PLANET_PREPROCESS='mv /db/planet.osm.bz2 /db/planet.osm.pbf && osmium cat -o /db/planet.osm.bz2 /db/planet.osm.pbf && rm /db/planet.osm.pbf' \
+    -e USE_OAUTH_COOKIE_CLIENT=yes \
+    --mount type=bind,source=/home/osm/oauth-settings.json,target=/secrets/oauth-settings.json \
     -v /big/docker/overpass_db/:/db \
     -p 12347:80 \
     -i -t \
-    --name overpass_monaco wiktorn/overpass-api:test
-
-
+    --name overpass_monaco wiktorn/overpass-api
 ```
 
 ## How to use Overpass API after deploying using above examples
