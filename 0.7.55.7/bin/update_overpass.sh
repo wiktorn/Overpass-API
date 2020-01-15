@@ -31,6 +31,10 @@ fi
         UPDATE_ARGS+=("--db-dir=/db/db")
     fi
 
+    if [[ "${USE_OAUTH_COOKIE_CLIENT}" = "yes" ]]; then
+      /app/venv/bin/python /app/bin/oauth_cookie_client.py -o /db/cookie.jar -s /secrets/oauth-settings.json --format netscape
+    fi
+
     while `true` ; do
         # if DIFF_FILE doesn't exit, try fetch new data
         if [[ ! -e  ${DIFF_FILE} ]] ; then

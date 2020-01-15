@@ -65,6 +65,9 @@ RUN apt-get update \
 
 COPY --from=builder /app /app
 
+ADD https://raw.githubusercontent.com/geofabrik/sendfile_osm_oauth_protector/7a6e540734d36dce94aa6be5194c08af1eee2d3f/oauth_cookie_client.py \
+    /app/bin/
+
 RUN addgroup overpass && adduser --home /db --disabled-password --gecos overpass --ingroup overpass overpass
 
 COPY requirements.txt /app/
@@ -82,7 +85,8 @@ COPY bin/update_overpass.sh bin/update_overpass_loop.sh bin/rules_loop.sh bin/di
 
 COPY docker-entrypoint.sh /app/
 
-RUN chmod a+x /app/docker-entrypoint.sh /app/bin/update_overpass.sh /app/bin/rules_loop.sh /app/bin/dispatcher_start.sh
+RUN chmod a+rx /app/docker-entrypoint.sh /app/bin/update_overpass.sh /app/bin/rules_loop.sh /app/bin/dispatcher_start.sh \
+    /app/bin/oauth_cookie_client.py
 
 ENV OVERPASS_RULES_LOAD 1
 
