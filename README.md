@@ -16,6 +16,7 @@ execution, set it to 100, and script will sleep 3 seconds between each execution
 * `OVERPASS_PLANET_PREPROCESS` - commands to be run before passing planet.osm file to `update_database`, e.g. conversion from pbf to osm.bz2 using osmium
 * `USE_OAUTH_COOKIE_CLIENT` - set to `yes` if you want to use oauth_cookie_client to update cookies before each update. Settings are read from /secrets/oauth-settings.json. Read the documentation [here](https://github.com/geofabrik/sendfile_osm_oauth_protector/blob/master/doc/client.md)
 * `OVERPASS_FASTCGI_PROCESSES` - number of fcgiwarp processes. Defaults to 4. Use higher values if you notice performance problems. 
+* `OVERPASS_RATE_LIMIT` - set the maximum allowed number of concurrent accesses from a single IP
 
 Image works in two modes `clone` or `init`. This affects how the instance gets initialized. If the mode is set to `clone`
 then data is copied from http://dev.overpass-api.de/api_drolbr/ and then updated from diffs. This will result in Overpass instance
