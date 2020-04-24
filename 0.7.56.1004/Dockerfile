@@ -26,7 +26,7 @@ RUN apt-get update \
         zlib1g \
         zlib1g-dev
 
-ADD http://dev.overpass-api.de/releases/osm-3s_v0.7.56.3.tar.gz /app/src.tar.gz
+ADD http://dev.overpass-api.de/releases/osm-3s_v0.7.56.1004.tar.gz /app/src.tar.gz
 
 RUN  mkdir -p /app/src \
     && cd /app/src \

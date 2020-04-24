@@ -8,4 +8,8 @@ elif [[ "${OVERPASS_META}" == "yes" ]] ; then
   DISPATCHER_ARGS+=("--meta")
 fi
 
+if [[ -v ${OVERPASS_RATE_LIMIT} ]] ; then
+  DISPATCHER_ARGS+=("--rate-limit=${OVERPASS_RATE_LIMIT}")
+fi
+
 find /db/db -type s -print0 | xargs -0 --no-run-if-empty rm && /app/bin/dispatcher "${DISPATCHER_ARGS[@]}"
