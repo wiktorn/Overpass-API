@@ -55,7 +55,7 @@ if [[ ! -f /db/init_done ]] ; then
     fi
 
     if [[ "$OVERPASS_MODE" = "init" ]]; then
-        while `true` ; do
+        while true ; do
           CURL_STATUS_CODE=$(curl -L -b /db/cookie.jar -o /db/planet.osm.bz2 -w "%{http_code}" "${OVERPASS_PLANET_URL}")
           case "${CURL_STATUS_CODE}" in
             429)
@@ -75,6 +75,7 @@ if [[ ! -f /db/init_done ]] ; then
                 && chown -R overpass:overpass /db \
                 && echo "Updating" \
                 && /app/bin/update_overpass.sh "-O /db/planet.osm.bz2" \
+                && /app/bin/osm3s_query --progress --rules --db-dir=/db/db < /db/db/rules/areas.osm3s \
                 && touch /db/init_done \
                 && rm /db/planet.osm.bz2 \
                 && chown -R overpass:overpass /db \
