@@ -12,4 +12,11 @@ if [[ -v ${OVERPASS_RATE_LIMIT} ]] ; then
   DISPATCHER_ARGS+=("--rate-limit=${OVERPASS_RATE_LIMIT}")
 fi
 
+if [[ -v ${OVERPASS_TIME} ]] ; then
+  DISPATCHER_ARGS+=("--time=${OVERPASS_TIME}")
+fi
+if [[ -v ${OVERPASS_SPACE} ]] ; then
+  DISPATCHER_ARGS+=("--space=${OVERPASS_SPACE}")
+fi
+
 find /db/db -type s -print0 | xargs -0 --no-run-if-empty rm && /app/bin/dispatcher "${DISPATCHER_ARGS[@]}"
