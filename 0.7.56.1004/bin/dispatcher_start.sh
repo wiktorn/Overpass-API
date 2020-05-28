@@ -8,14 +8,14 @@ elif [[ "${OVERPASS_META}" == "yes" ]] ; then
   DISPATCHER_ARGS+=("--meta")
 fi
 
-if [[ -v ${OVERPASS_RATE_LIMIT} ]] ; then
+if [[ ! -z ${OVERPASS_RATE_LIMIT} ]] ; then
   DISPATCHER_ARGS+=("--rate-limit=${OVERPASS_RATE_LIMIT}")
 fi
 
-if [[ -v ${OVERPASS_TIME} ]] ; then
+if [[ ! -z ${OVERPASS_TIME} ]] ; then
   DISPATCHER_ARGS+=("--time=${OVERPASS_TIME}")
 fi
-if [[ -v ${OVERPASS_SPACE} ]] ; then
+if [[ ! -z ${OVERPASS_SPACE} ]] ; then
   DISPATCHER_ARGS+=("--space=${OVERPASS_SPACE}")
 fi
 
