@@ -38,7 +38,7 @@ RUN  mkdir -p /app/src \
     && automake --add-missing  \
     && autoconf \
     && CXXFLAGS='-O2' CFLAGS='-O2' ./configure --prefix=/app --enable-lz4 \
-    && make -j $(grep -c ^processor /proc/cpuinfo) dist install clean \
+    && make dist install clean \
     && mkdir -p /db/diffs /app/etc \
     && cp -r /app/src/rules /app/etc/rules \
     && rm -rf /app/src /app/src.tar.gz
