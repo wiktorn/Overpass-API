@@ -19,6 +19,7 @@ execution, set it to 100, and script will sleep 3 seconds between each execution
 * `OVERPASS_RATE_LIMIT` - set the maximum allowed number of concurrent accesses from a single IP
 * `OVERPASS_TIME` - set the maximum amount of time units (available time)
 * `OVERPASS_SPACE` - set the maximum amount of RAM (available space)
+* `OVERPASS_MAX_TIMEOUT` - set the maximum timeout for queries (default: 1000s). Translates to send/recv timeout for fastcgi_wrap
 
 Image works in two modes `clone` or `init`. This affects how the instance gets initialized. If the mode is set to `clone`
 then data is copied from http://dev.overpass-api.de/api_drolbr/ and then updated from diffs. This will result in Overpass instance
