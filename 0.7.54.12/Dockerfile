@@ -79,7 +79,7 @@ RUN mkdir /nginx /docker-entrypoint-initdb.d && chown nginx:nginx /nginx && chow
 
 COPY etc/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-COPY etc/nginx-overpass.conf /etc/nginx/nginx.conf
+COPY etc/nginx-overpass.conf.template /etc/nginx/nginx.conf.template
 
 COPY bin/update_overpass.sh bin/update_overpass_loop.sh bin/rules_loop.sh bin/dispatcher_start.sh bin/start_fcgiwarp.sh /app/bin/
 

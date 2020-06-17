@@ -7,6 +7,9 @@ OVERPASS_MODE=${OVERPASS_MODE:-clone}
 OVERPASS_COMPRESSION=${OVERPASS_COMPRESSION:-gz}
 OVERPASS_FLUSH_SIZE=${OVERPASS_FLUSH_SIZE:-16}
 
+# this is used by other processes, so needs to be exported
+export OVERPASS_MAX_TIMEOUT=${OVERPASS_MAX_TIMEOUT:-1000s}
+
 if [[ "$OVERPASS_META" == "attic" ]] ; then
     META="--keep-attic"
 elif [[ "${OVERPASS_META}" == "yes" ]] ; then
@@ -101,6 +104,8 @@ if [[ ! -f /db/init_done ]] ; then
         done
     fi
 fi
+
+envsubst '${OVERPASS_MAX_TIMEOUT}' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf
 
 echo "Starting supervisord process"
 exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
