@@ -18,7 +18,7 @@ execution, set it to 100, and script will sleep 3 seconds between each execution
 * `OVERPASS_FASTCGI_PROCESSES` - number of fcgiwarp processes. Defaults to 4. Use higher values if you notice performance problems.
 * `OVERPASS_RATE_LIMIT` - set the maximum allowed number of concurrent accesses from a single IP
 * `OVERPASS_TIME` - set the maximum amount of time units (available time)
-* `OVERPASS_SPACE` - set the maximum amount of RAM (available space)
+* `OVERPASS_SPACE` - set the maximum amount of RAM (available space) in bytes
 * `OVERPASS_MAX_TIMEOUT` - set the maximum timeout for queries (default: 1000s). Translates to send/recv timeout for fastcgi_wrap
 
 Image works in two modes `clone` or `init`. This affects how the instance gets initialized. If the mode is set to `clone`
