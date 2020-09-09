@@ -66,7 +66,8 @@ if [[ ! -f /db/init_done ]] ; then
               sleep 300
               continue
               ;;
-            200)
+            # for `file:///` scheme curl returns `000` HTTP status code
+            200 | 000)
               (
                 if [[ ! -z "${OVERPASS_PLANET_PREPROCESS+x}" ]]; then
                     echo "Running preprocessing command: ${OVERPASS_PLANET_PREPROCESS}"
@@ -95,8 +96,8 @@ if [[ ! -f /db/init_done ]] ; then
               exit
               ;;
             *)
-              cat /db/planet.osm.bz2
               echo "Failed to download planet file. HTTP status code: ${CURL_STATUS_CODE}"
+              cat /db/planet.osm.bz2
               exit
               ;;
           esac
