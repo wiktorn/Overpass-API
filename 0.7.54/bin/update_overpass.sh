@@ -56,7 +56,7 @@ fi
 
         # if DIFF_FILE is non-empty, try to process it
         if [[ -s ${DIFF_FILE} ]] ; then
-            VERSION=$(osmium fileinfo -e -g data.timestamp.last "${DIFF_FILE}")
+            VERSION=$(osmium fileinfo -e -g data.timestamp.last "${DIFF_FILE}" || echo "")
             if [[ ! -z "${VERSION// }" ]] ; then
               echo /app/bin/update_database --version="${VERSION}" "${UPDATE_ARGS[@]}"
               cat "${DIFF_FILE}" | /app/bin/update_database --version="${VERSION}" "${UPDATE_ARGS[@]}"
