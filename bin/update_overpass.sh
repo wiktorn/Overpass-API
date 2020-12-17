@@ -40,6 +40,7 @@ fi
         if [[ ! -e  ${DIFF_FILE} ]] ; then
             # if /db/replicate_id exists, do not pass $1 arg (which could contain -O arg pointing to planet file
             if [[ -s /db/replicate_id ]] ; then
+                cp -f /db/replicate_id /db/replicate_id.backup
                 set +e
                 /app/venv/bin/pyosmium-get-changes -vvv --cookie /db/cookie.jar --server "${OVERPASS_DIFF_URL}" -o "${DIFF_FILE}" -f /db/replicate_id
                 OSMIUM_STATUS=$?
@@ -63,6 +64,7 @@ fi
             else
               echo "Empty version, skipping file"
               cat "${DIFF_FILE}"
+              cp -f /db/replicate_id.backup /db/replicate_id
             fi
         fi
 
