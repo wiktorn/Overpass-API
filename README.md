@@ -20,25 +20,34 @@ execution, set it to 100, and script will sleep 3 seconds between each execution
 * `OVERPASS_TIME` - set the maximum amount of time units (available time)
 * `OVERPASS_SPACE` - set the maximum amount of RAM (available space) in bytes
 * `OVERPASS_MAX_TIMEOUT` - set the maximum timeout for queries (default: 1000s). Translates to send/recv timeout for fastcgi_wrap
+* `OVERPASS_CLONE_SOURCE` - the URL to clone a copy of Overpass from, if in `clone` mode. Defaults to http://dev.overpass-api.de/api_drolbr/, which uses minute diffs.
 
-Image works in two modes `clone` or `init`. This affects how the instance gets initialized. If the mode is set to `clone`
-then data is copied from http://dev.overpass-api.de/api_drolbr/ and then updated from diffs. This will result in Overpass instance
-covering whole world. This mode works only with minute diffs.
+### Modes
 
-In `init` mode you need to point `OVERPASS_PLANET_URL` to address with planet (partial) dump. This file will be downloaded,
-indexed by Overpass and later - updated using `OVERPASS_DIFF_URL`.
+Image works in two modes `init` or `clone`. This affects how the instance gets initialized:
 
-Start initalization mode with `-i` and `-t` options to `docker run` so you will have a chance to monitor the progress of
-file downloads etc.
+* `init` - OSM data is downloaded from `OVERPASS_PLANET_URL`, which can be a full planet or partial planet dump.
+This file will then be indexed by Overpass and later updated using `OVERPASS_DIFF_URL`.
 
-After initialization is finished Docker container will stop. Once you start it again (with `docker start` command) it will start
-downloading minute diffs, applying them to database and serving API requests.
+* `clone` - data is copied from an existing server, given by `OVERPASS_CLONE_SOURCE`, and then updated using `OVERPASS_DIFF_URL`.
+This mode is faster to set up, as the OSM planet file is already indexed.
+The default clone source provides an Overpass instance using minute diffs covering the whole world (hourly or daily diffs will not work with this image).
 
-Container exposes port 80, map it to your host port using `-p`. Overpass API is available at `/api/interpreter`.
+### Running
+
+To monitor the progress of file downloads, run with the stdin (`-i`) and TTY  (`-t`) flags:
+`docker run -i -t wiktorn/overpass-api`
+
+After initialization is finished, the Docker container will stop. Once you start it again (with `docker start` command) it will start downloading diffs, applying them to database, and serving API requests.
+
+The container exposes port 80. Map it to your host port using `-p`:
+`docker run -p 80:80 wiktorn/overpass-api`
+
+The Overpass API will then be available at `http://localhost:80/api/interpreter`.
 
 Container includes binaries of pyosmium (in `/app/venv/bin/`) and osmium-tool (in `/usr/bin`)
 
-All data resides within /db directory in container.
+All data resides within the `/db` directory in the container.
 
 # Examples
 ## Overpass instance covering part of the world
