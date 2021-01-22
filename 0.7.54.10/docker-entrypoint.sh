@@ -6,6 +6,7 @@ OVERPASS_META=${OVERPASS_META:-no}
 OVERPASS_MODE=${OVERPASS_MODE:-clone}
 OVERPASS_COMPRESSION=${OVERPASS_COMPRESSION:-gz}
 OVERPASS_FLUSH_SIZE=${OVERPASS_FLUSH_SIZE:-16}
+OVERPASS_CLONE_SOURCE=${OVERPASS_CLONE_SOURCE:-http://dev.overpass-api.de/api_drolbr/}
 
 # this is used by other processes, so needs to be exported
 export OVERPASS_MAX_TIMEOUT=${OVERPASS_MAX_TIMEOUT:-1000s}
@@ -48,7 +49,7 @@ if [[ ! -f /db/init_done ]] ; then
 
     if [[ "$OVERPASS_MODE" = "clone" ]]; then
         mkdir -p /db/db \
-        && /app/bin/download_clone.sh --db-dir=/db/db --source=http://dev.overpass-api.de/api_drolbr/ --meta="${OVERPASS_META}" \
+        && /app/bin/download_clone.sh --db-dir=/db/db --source="${OVERPASS_CLONE_SOURCE}" --meta="${OVERPASS_META}" \
         && cp /db/db/replicate_id /db/replicate_id \
         && cp -r /app/etc/rules /db/db \
         && chown -R overpass:overpass /db \
