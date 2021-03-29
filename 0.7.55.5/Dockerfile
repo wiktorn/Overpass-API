@@ -1,4 +1,4 @@
-FROM nginx:1.14 AS builder
+FROM nginx:1.18 AS builder
 
 RUN apt-get update \
     && apt-get upgrade -y \
@@ -43,7 +43,7 @@ RUN  mkdir -p /app/src \
     && cp -r /app/src/rules /app/etc/rules \
     && rm -rf /app/src /app/src.tar.gz
 
-FROM nginx:1.14
+FROM nginx:1.18
 
 RUN apt-get update \
     && apt-get upgrade -y \
@@ -73,7 +73,7 @@ RUN addgroup overpass && adduser --home /db --disabled-password --gecos overpass
 COPY requirements.txt /app/
 
 RUN python3 -m venv /app/venv \
-    && /app/venv/bin/pip install -r /app/requirements.txt
+    && /app/venv/bin/pip install -r /app/requirements.txt --only-binary osmium
 
 RUN mkdir /nginx /docker-entrypoint-initdb.d && chown nginx:nginx /nginx && chown -R overpass:overpass /db
 
