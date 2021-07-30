@@ -1,0 +1,23 @@
+volumes:
+  overpass-db:
+
+version: '3.8'
+services:
+  overpass:
+    # specify the image here
+    image: wiktorn/overpass-api:0.7.56.9
+    container_name: overpass
+    # uncomment if you want to build the image yourself
+    # build: .
+    ports:
+      - 12345:80
+    volumes:
+      # use a docker managed volume
+      - overpass-db:/db
+    environment:
+      - OVERPASS_META=no
+      - OVERPASS_MODE=init
+      - OVERPASS_PLANET_URL=http://download.geofabrik.de/europe/monaco-latest.osm.bz2
+      - OVERPASS_DIFF_URL=http://download.openstreetmap.fr/replication/europe/monaco/minute/
+      - OVERPASS_UPDATE_SLEEP=3600
+      - OVERPASS_USE_AREAS=false

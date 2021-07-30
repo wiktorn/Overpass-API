@@ -10,6 +10,7 @@ OVERPASS_CLONE_SOURCE=${OVERPASS_CLONE_SOURCE:-http://dev.overpass-api.de/api_dr
 
 # this is used by other processes, so needs to be exported
 export OVERPASS_MAX_TIMEOUT=${OVERPASS_MAX_TIMEOUT:-1000s}
+export OVERPASS_USE_AREAS=${OVERPASS_USE_AREAS:-true}
 
 if [[ "$OVERPASS_META" == "attic" ]] ; then
     META="--keep-attic"
@@ -80,7 +81,7 @@ if [[ ! -f /db/init_done ]] ; then
                 && chown -R overpass:overpass /db \
                 && echo "Updating" \
                 && /app/bin/update_overpass.sh "-O /db/planet.osm.bz2" \
-                && /app/bin/osm3s_query --progress --rules --db-dir=/db/db < /db/db/rules/areas.osm3s \
+                && if [[ "OVERPASS_USE_AREAS" = "true" ]]; then echo "Generating areas..." && /app/bin/osm3s_query --progress --rules --db-dir=/db/db < /db/db/rules/areas.osm3s; fi \
                 && touch /db/init_done \
                 && rm /db/planet.osm.bz2 \
                 && chown -R overpass:overpass /db \
