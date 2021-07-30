@@ -21,6 +21,7 @@ The following enviroment variables can be used to customize the setup:
 * `OVERPASS_TIME` - set the maximum amount of time units (available time).
 * `OVERPASS_SPACE` - set the maximum amount of RAM (available space) in bytes.
 * `OVERPASS_MAX_TIMEOUT` - set the maximum timeout for queries (default: 1000s). Translates to send/recv timeout for fastcgi_wrap.
+* `OVERPASS_USE_AREAS` - if `false` initial area generation and the area updater process will be disabled. Default `true`.
 
 ### Modes
 
@@ -48,6 +49,8 @@ The Overpass API will then be available at `http://localhost:80/api/interpreter`
 Container includes binaries of pyosmium (in `/app/venv/bin/`) and osmium-tool (in `/usr/bin`)
 
 All data resides within the `/db` directory in the container.
+
+For convenience, a [`docker-compose.yml` template](./docker-compose.yml.template) is included.
 
 # Examples
 ## Overpass instance covering part of the world
@@ -124,4 +127,3 @@ You may then use this directly as an Overpass API url, or use it within [Overpas
 Try a direct query with `http://localhost:12346/api/interpreter?data=node(3470507586);out geom;`, which should return a pub in Dublin.
 
 To use the API in Overpass Turbo, go to settings and set Server to`http://localhost:12346/api/`. Now you will use your local Overpass instance for your queries.
-
