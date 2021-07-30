@@ -1,0 +1,9 @@
+# ignore the big files when building yourself
+**/db
+**/diffs
+**/*.log
+**/*.bin
+**/*.idx
+**/*.map
+**/*.osm.bz2
+README.md
