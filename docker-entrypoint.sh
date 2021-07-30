@@ -10,7 +10,6 @@ OVERPASS_CLONE_SOURCE=${OVERPASS_CLONE_SOURCE:-http://dev.overpass-api.de/api_dr
 
 # this is used by other processes, so needs to be exported
 export OVERPASS_MAX_TIMEOUT=${OVERPASS_MAX_TIMEOUT:-1000s}
-export OVERPASS_USE_AREAS=${OVERPASS_USE_AREAS:-true}
 
 if [[ "$OVERPASS_META" == "attic" ]] ; then
     META="--keep-attic"
@@ -55,56 +54,51 @@ if [[ ! -f /db/init_done ]] ; then
         && cp -r /app/etc/rules /db/db \
         && chown -R overpass:overpass /db \
         && touch /db/init_done \
-        && echo "Overpass ready, you can start your container with docker start"
+        && echo "Overpass container ready to receive requests"
         exit
     fi
 
     if [[ "$OVERPASS_MODE" = "init" ]]; then
-        while true ; do
-          CURL_STATUS_CODE=$(curl -L -b /db/cookie.jar -o /db/planet.osm.bz2 -w "%{http_code}" "${OVERPASS_PLANET_URL}")
-          case "${CURL_STATUS_CODE}" in
-            429)
-              echo "Server responded with 429 Too many requests. Trying again in 5 minutes..."
-              sleep 300
-              continue
-              ;;
-            # for `file:///` scheme curl returns `000` HTTP status code
-            200 | 000)
-              (
-                if [[ ! -z "${OVERPASS_PLANET_PREPROCESS+x}" ]]; then
-                    echo "Running preprocessing command: ${OVERPASS_PLANET_PREPROCESS}"
-                    eval "${OVERPASS_PLANET_PREPROCESS}"
-                fi \
-                && /app/bin/init_osm3s.sh /db/planet.osm.bz2 /db/db /app "${META}" "--version=$(osmium fileinfo -e -g data.timestamp.last /db/planet.osm.bz2) --compression-method=${OVERPASS_COMPRESSION} --map-compression-method=${OVERPASS_COMPRESSION} --flush-size=${OVERPASS_FLUSH_SIZE}" \
-                && echo "Database created. Now updating it." \
-                && cp -r /app/etc/rules /db/db \
-                && chown -R overpass:overpass /db \
-                && echo "Updating" \
-                && /app/bin/update_overpass.sh "-O /db/planet.osm.bz2" \
-                && if [[ "OVERPASS_USE_AREAS" = "true" ]]; then echo "Generating areas..." && /app/bin/osm3s_query --progress --rules --db-dir=/db/db < /db/db/rules/areas.osm3s; fi \
-                && touch /db/init_done \
-                && rm /db/planet.osm.bz2 \
-                && chown -R overpass:overpass /db \
-                && echo "Overpass ready, you can start your container with docker start" \
-                && exit
-              ) || (
-                echo "Failed to process planet file"
-                exit
-              )
-              ;;
-            403)
-              echo "Access denied when downloading planet file. Check your OVERPASS_PLANET_URL and OVERPASS_COOKIE_JAR_CONTENTS or USE_OAUTH_COOKIE_CLIENT"
-              cat /db/cookie.jar
-              exit
-              ;;
-            *)
-              echo "Failed to download planet file. HTTP status code: ${CURL_STATUS_CODE}"
-              cat /db/planet.osm.bz2
-              exit
-              ;;
-          esac
-          exit
+        CURL_STATUS_CODE=$(curl -L -b /db/cookie.jar -o /db/planet.osm.bz2 -w "%{http_code}" "${OVERPASS_PLANET_URL}")
+        # try again until it's allowed
+        while [ $CURL_STATUS_CODE = "429" ] ; do
+            echo "Server responded with 429 Too many requests. Trying again in 5 minutes..."
+            sleep 300
+            CURL_STATUS_CODE=$(curl -L -b /db/cookie.jar -o /db/planet.osm.bz2 -w "%{http_code}" "${OVERPASS_PLANET_URL}")
         done
+          # for `file:///` scheme curl returns `000` HTTP status code
+        if [[ $CURL_STATUS_CODE = "200" || $CURL_STATUS_CODE = "000" ]]; then
+            (
+              if [[ ! -z "${OVERPASS_PLANET_PREPROCESS+x}" ]]; then
+                  echo "Running preprocessing command: ${OVERPASS_PLANET_PREPROCESS}"
+                  eval "${OVERPASS_PLANET_PREPROCESS}"
+              fi \
+              && /app/bin/init_osm3s.sh /db/planet.osm.bz2 /db/db /app "${META}" "--version=$(osmium fileinfo -e -g data.timestamp.last /db/planet.osm.bz2) --compression-method=${OVERPASS_COMPRESSION} --map-compression-method=${OVERPASS_COMPRESSION} --flush-size=${OVERPASS_FLUSH_SIZE}" \
+              && echo "Database created. Now updating it." \
+              && cp -r /app/etc/rules /db/db \
+              && chown -R overpass:overpass /db \
+              && echo "Updating" \
+              && /app/bin/update_overpass.sh "-O /db/planet.osm.bz2" \
+              && if [[ "OVERPASS_USE_AREAS" = "true" ]]; then
+                   echo "Generating areas..." && /app/bin/osm3s_query --progress --rules --db-dir=/db/db < /db/db/rules/areas.osm3s
+                 fi \
+              && touch /db/init_done \
+              && rm /db/planet.osm.bz2 \
+              && chown -R overpass:overpass /db \
+              && echo "Overpass container ready to receive requests"
+            ) || (
+              echo "Failed to process planet file"
+              exit 1
+            )
+        elif [[ $CURL_STATUS_CODE = "403" ]]; then
+          echo "Access denied when downloading planet file. Check your OVERPASS_PLANET_URL and OVERPASS_COOKIE_JAR_CONTENTS or USE_OAUTH_COOKIE_CLIENT"
+          cat /db/cookie.jar
+          exit 1
+        else
+          echo "Failed to download planet file. HTTP status code: ${CURL_STATUS_CODE}"
+          cat /db/planet.osm.bz2
+          exit 1
+        fi
     fi
 fi
 
@@ -112,3 +106,6 @@ envsubst '${OVERPASS_MAX_TIMEOUT}' < /etc/nginx/nginx.conf.template > /etc/nginx
 
 echo "Starting supervisord process"
 exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
+
+# Keep docker running easy
+exec "$@"
