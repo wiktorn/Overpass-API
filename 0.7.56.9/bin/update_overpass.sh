@@ -16,7 +16,7 @@ fi
 
 (
     set -e
-    UPDATE_ARGS=("--compression-method=${OVERPASS_COMPRESSION}" "--map-compression-method=${OVERPASS_COMPRESSION}" "--flush-size=${OVERPASS_FLUSH_SIZE}")
+    UPDATE_ARGS=("--flush-size=${OVERPASS_FLUSH_SIZE}")
     if [[ "${OVERPASS_META}" == "attic" ]] ; then
         UPDATE_ARGS+=("--keep-attic")
     elif [[ "${OVERPASS_META}" == "yes" ]] ; then
@@ -59,8 +59,8 @@ fi
         if [[ -s ${DIFF_FILE} ]] ; then
             VERSION=$(osmium fileinfo -e -g data.timestamp.last "${DIFF_FILE}" || (cp -f /db/replicate_id.backup /db/replicate_id && echo "Broken file" && cat "${DIFF_FILE}" && rm -f "${DIFF_FILE}" && exit 1 ))
             if [[ ! -z "${VERSION// }" ]] ; then
-              echo /app/bin/update_database --version="${VERSION}" "${UPDATE_ARGS[@]}"
-              cat "${DIFF_FILE}" | /app/bin/update_database --version="${VERSION}" "${UPDATE_ARGS[@]}"
+              echo /app/bin/update_from_dir --osc-dir="$(dirname ${DIFF_FILE})" --version="${VERSION}" "${UPDATE_ARGS[@]}"
+              /app/bin/update_from_dir --osc-dir="$(dirname ${DIFF_FILE})" --version="${VERSION}" "${UPDATE_ARGS[@]}"
             else
               echo "Empty version, skipping file"
               cat "${DIFF_FILE}"
