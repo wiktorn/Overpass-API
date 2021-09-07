@@ -65,9 +65,9 @@ RUN apt-get update \
 
 COPY --from=builder /app /app
 
-ADD https://raw.githubusercontent.com/geofabrik/sendfile_osm_oauth_protector/7a6e540734d36dce94aa6be5194c08af1eee2d3f/oauth_cookie_client.py \
+ADD https://raw.githubusercontent.com/geofabrik/sendfile_osm_oauth_protector/master/oauth_cookie_client.py \
     /app/bin/
-
+RUN sed -i -e 's/allow_read_prefs": "yes"/allow_read_prefs": "1"/g' /app/bin/oauth_cookie_client.py
 RUN addgroup overpass && adduser --home /db --disabled-password --gecos overpass --ingroup overpass overpass
 
 COPY requirements.txt /app/
