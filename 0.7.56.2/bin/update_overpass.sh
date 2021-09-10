@@ -3,7 +3,7 @@
 # TODO: split to two files - one with while loop for unattended use
 # one for updating to current state - second called by first
 
-DIFF_FILE=/db/diffs/changes.osm
+DIFF_FILE=/db/diffs/changes.osc
 
 OVERPASS_META=${OVERPASS_META:-no}
 OVERPASS_COMPRESSION=${OVERPASS_COMPRESSION:-gz}
