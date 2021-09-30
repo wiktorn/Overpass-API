@@ -43,10 +43,10 @@ def main():
         os.mkdir(ver)
         with open(pathlib.Path(ver) / "Dockerfile", "w+") as f:
             f.write(template.format(version=ver))
-        for i in ("etc", "bin"):
-            shutil.copytree(i, pathlib.Path(ver) / i)
-        shutil.copyfile("docker-entrypoint.sh", pathlib.Path(ver) / "docker-entrypoint.sh")
-        shutil.copyfile("requirements.txt", pathlib.Path(ver) / "requirements.txt")
+        #for i in ("etc", "bin"):
+        #    shutil.copytree(i, pathlib.Path(ver) / i)
+        #shutil.copyfile("docker-entrypoint.sh", pathlib.Path(ver) / "docker-entrypoint.sh")
+        #shutil.copyfile("requirements.txt", pathlib.Path(ver) / "requirements.txt")
 
 
 if __name__ == '__main__':
