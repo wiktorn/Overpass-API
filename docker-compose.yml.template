@@ -21,3 +21,8 @@ services:
       - OVERPASS_DIFF_URL=http://download.openstreetmap.fr/replication/europe/monaco/minute/
       - OVERPASS_UPDATE_SLEEP=3600
       - OVERPASS_USE_AREAS=false
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:12345/api/status || exit 1"]
+      interval: 5m
+      start_period: 1m
+      retries: 2880  # 2 days in 5 mins intervals
