@@ -22,7 +22,5 @@ services:
       - OVERPASS_UPDATE_SLEEP=3600
       - OVERPASS_USE_AREAS=false
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost/api/status || exit 1"]
-      interval: 5m
-      start_period: 5m
-      retries: 2880  # 2 days in 5 mins intervals
+      test: ["CMD-SHELL", "curl -qf 'http://localhost/api/interpreter?data=\[out:json\];node(1);out;' | jq '.generator' |grep -q Overpass || exit 1"]
+      start_period: 48h

@@ -54,6 +54,7 @@ RUN apt-get update \
         curl \
         expat \
         fcgiwrap \
+        jq \
         liblz4-1 \
         osmium-tool \
         python3 \
@@ -88,8 +89,11 @@ COPY docker-entrypoint.sh /app/
 RUN chmod a+rx /app/docker-entrypoint.sh /app/bin/update_overpass.sh /app/bin/rules_loop.sh /app/bin/dispatcher_start.sh \
     /app/bin/oauth_cookie_client.py /app/bin/start_fcgiwarp.sh
 
-ENV OVERPASS_RULES_LOAD 1
+ENV OVERPASS_RULES_LOAD=${{OVERPASS_RULES_LOAD:-1}}
+ENV OVERPASS_USE_AREAS=${{ENV_OVERPASS_USE_AREAS:-true}}
 
 EXPOSE 80
-# CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
+
+HEALTHCHECK --start-period=48h CMD curl -qf "http://localhost/api/interpreter?data=\[out:json\];node(1);out;" | jq '.generator' |grep -q Overpass || exit 1
+
 CMD ["/app/docker-entrypoint.sh"]
