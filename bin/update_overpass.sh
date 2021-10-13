@@ -47,7 +47,7 @@ fi
 				set -e
 			else
 				set +e
-				/app/venv/bin/pyosmium-get-changes -vvv $1 --cookie /db/cookie.jar --server "${OVERPASS_DIFF_URL}" -o "${DIFF_FILE}" -f /db/replicate_id
+				/app/venv/bin/pyosmium-get-changes -vvv "$1" --cookie /db/cookie.jar --server "${OVERPASS_DIFF_URL}" -o "${DIFF_FILE}" -f /db/replicate_id
 				OSMIUM_STATUS=$?
 				set -e
 			fi
@@ -58,7 +58,7 @@ fi
 		# if DIFF_FILE is non-empty, try to process it
 		if [[ -s ${DIFF_FILE} ]]; then
 			VERSION=$(osmium fileinfo -e -g data.timestamp.last "${DIFF_FILE}" || (cp -f /db/replicate_id.backup /db/replicate_id && echo "Broken file" && cat "${DIFF_FILE}" && rm -f "${DIFF_FILE}" && exit 1))
-			if [[ ! -z "${VERSION// /}" ]]; then
+			if [[ -n "${VERSION// /}" ]]; then
 				echo /app/bin/update_from_dir --osc-dir="$(dirname ${DIFF_FILE})" --version="${VERSION}" "${UPDATE_ARGS[@]}"
 				/app/bin/update_from_dir --osc-dir="$(dirname ${DIFF_FILE})" --version="${VERSION}" "${UPDATE_ARGS[@]}"
 			else
