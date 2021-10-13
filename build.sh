@@ -1,21 +1,22 @@
-#!/bin/sh
+#!/bin/bash
 
 set -e
 
 case "$1" in
 "build")
 	python update.py
-	for i in $(ls -d 0.*); do
-		docker build -t wiktorn/overpass-api:$i -f $i/Dockerfile .
-	done
-	for i in $(ls -d 0.* | grep '^[0-9]*\.[0-9]*\.[0-9]*$' | tail -n 1); do
-		docker tag wiktorn/overpass-api:$i wiktorn/overpass-api:latest
-	done
+
+	# docker build
+	find . -maxdepth 1 -type d -name '0.*' -exec sh -c 'docker build -t wiktorn/overpass-api:$(basename "$1") -f "$1"/Dockerfile .' sh {} \;
+
+	# docker tag
+	while IFS= read -r -d '' file; do
+		docker tag "wiktorn/overpass-api:$(basename "$file")" wiktorn/overpass-api:latest
+	done < <(find . -maxdepth 1 -type d -regex '\./[0-9]\.[0-9]\.[0-9]*' -print0 | sort -nz | tail -z -n 1)
 	;;
 "push")
-	for i in $(ls -d 0.*); do
-		docker push wiktorn/overpass-api:$i
-	done
+	# docker push
+	find . -maxdepth 1 -type d -name '0.*' -exec sh -c 'docker push "wiktorn/overpass-api:$(basename "$1")"' sh {} \;
 	docker push wiktorn/overpass-api:latest
 	;;
 "$1")
