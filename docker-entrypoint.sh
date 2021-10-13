@@ -27,6 +27,7 @@ for f in /docker-entrypoint-initdb.d/*; do
                 "$f"
             else
                 echo "$0: sourcing $f"
+                # shellcheck disable=SC1090 # ignore SC1090 (unable to follow file) because they are dynamically provided
                 . "$f"
             fi
             ;;
@@ -61,7 +62,7 @@ if [[ ! -f /db/init_done ]] ; then
     if [[ "$OVERPASS_MODE" = "init" ]]; then
         CURL_STATUS_CODE=$(curl -L -b /db/cookie.jar -o /db/planet.osm.bz2 -w "%{http_code}" "${OVERPASS_PLANET_URL}")
         # try again until it's allowed
-        while [ $CURL_STATUS_CODE = "429" ] ; do
+        while [ "$CURL_STATUS_CODE" = "429" ] ; do
             echo "Server responded with 429 Too many requests. Trying again in 5 minutes..."
             sleep 300
             CURL_STATUS_CODE=$(curl -L -b /db/cookie.jar -o /db/planet.osm.bz2 -w "%{http_code}" "${OVERPASS_PLANET_URL}")
@@ -69,7 +70,7 @@ if [[ ! -f /db/init_done ]] ; then
           # for `file:///` scheme curl returns `000` HTTP status code
         if [[ $CURL_STATUS_CODE = "200" || $CURL_STATUS_CODE = "000" ]]; then
             (
-              if [[ ! -z "${OVERPASS_PLANET_PREPROCESS+x}" ]]; then
+              if [[ -n "${OVERPASS_PLANET_PREPROCESS+x}" ]]; then
                   echo "Running preprocessing command: ${OVERPASS_PLANET_PREPROCESS}"
                   eval "${OVERPASS_PLANET_PREPROCESS}"
               fi \
@@ -79,7 +80,7 @@ if [[ ! -f /db/init_done ]] ; then
               && chown -R overpass:overpass /db \
               && echo "Updating" \
               && /app/bin/update_overpass.sh "-O /db/planet.osm.bz2" \
-              && if [[ "OVERPASS_USE_AREAS" = "true" ]]; then
+              && if [[ "${OVERPASS_USE_AREAS}" = "true" ]]; then
                    echo "Generating areas..." && /app/bin/osm3s_query --progress --rules --db-dir=/db/db < /db/db/rules/areas.osm3s
                  fi \
               && touch /db/init_done \
@@ -102,6 +103,7 @@ if [[ ! -f /db/init_done ]] ; then
     fi
 fi
 
+# shellcheck disable=SC2016 # ignore SC2016 (variables within single quotes) as this is exactly what we want to do here
 envsubst '${OVERPASS_MAX_TIMEOUT}' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf
 
 echo "Starting supervisord process"
