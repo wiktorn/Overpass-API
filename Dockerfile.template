@@ -84,7 +84,7 @@ COPY etc/nginx-overpass.conf.template /etc/nginx/nginx.conf.template
 
 COPY bin/update_overpass.sh bin/update_overpass_loop.sh bin/rules_loop.sh bin/dispatcher_start.sh bin/start_fcgiwarp.sh /app/bin/
 
-COPY docker-entrypoint.sh /app/
+COPY docker-entrypoint.sh docker-healthcheck.sh /app/
 
 RUN chmod a+rx /app/docker-entrypoint.sh /app/bin/update_overpass.sh /app/bin/rules_loop.sh /app/bin/dispatcher_start.sh \
     /app/bin/oauth_cookie_client.py /app/bin/start_fcgiwarp.sh
@@ -94,6 +94,6 @@ ENV OVERPASS_USE_AREAS=${{ENV_OVERPASS_USE_AREAS:-true}}
 
 EXPOSE 80
 
-HEALTHCHECK --start-period=48h CMD curl -qf "http://localhost/api/interpreter?data=\[out:json\];node(1);out;" | jq '.generator' |grep -q Overpass || exit 1
+HEALTHCHECK --start-period=48h CMD /app/docker-healthcheck.sh
 
 CMD ["/app/docker-entrypoint.sh"]
