@@ -23,6 +23,7 @@ The following enviroment variables can be used to customize the setup:
 * `OVERPASS_MAX_TIMEOUT` - set the maximum timeout for queries (default: 1000s). Translates to send/recv timeout for fastcgi_wrap.
 * `OVERPASS_USE_AREAS` - if `false` initial area generation and the area updater process will be disabled. Default `true`.
 * `OVERPASS_HEALTHCHECK` - shell commands to execute to verify that image is healthy. `exit 1` in case of failures, `exit 0` when container is healthy. Default healthcheck queries overpass and verifies that there is reponse returned
+* `OVERPASS_STOP_AFTER_INIT` - if `false` the container will keep runing after init is complete. Otherwise container will be stopped after initialization process is complete. Default `true`
 
 ### Modes
 
@@ -124,11 +125,14 @@ docker run \
 Using following environment variable:
 ```
 -e OVERPASS_HEALTHCHECK='
-OVERPASS_DATE=$(date -d $(curl "http://localhost/api/interpreter?data=\[out:json\];node(1);out;" | jq -r .osm3s.timestamp_osm_base) +%s)
-TWO_DAYS_AGO=$(($(date +%s) - 2*86400)) ;
-if [ ${OVERPASS_DATE} -lt ${TWO_DAYS_AGO} ] ; then
-  exit 1;
-fi
+  OVERPASS_RESPONSE=$(curl -s "http://localhost/api/interpreter?data=\[out:json\];node(1);out;" | jq -r .osm3s.timestamp_osm_base)
+  OVERPASS_DATE=$(date -d "$OVERPASS_RESPONSE" +%s)
+  TWO_DAYS_AGO=$(($(date +%s) - 2*86400)) ;
+  if [ ${OVERPASS_DATE} -lt ${TWO_DAYS_AGO} ] ; then
+    echo "Overpass out of date. Overpass date: ${OVERPASS_RESPONSE}"
+    exit 1;
+  fi
+  echo "Overpass date: ${OVERPASS_RESPONSE}"
 '
 ```
 healthcheck will verify the date of last update of Overpass instance and if data in instance are earlier than two days ago, healthcheck will fail.

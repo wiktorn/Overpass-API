@@ -85,12 +85,17 @@ if [[ ! -f /db/init_done ]]; then
 					fi &&
 					touch /db/init_done &&
 					rm /db/planet.osm.bz2 &&
-					chown -R overpass:overpass /db &&
-					echo "Overpass container ready to receive requests"
+					chown -R overpass:overpass /db
 			) || (
 				echo "Failed to process planet file"
 				exit 1
 			)
+			if [[ "${OVERPASS_STOP_AFTER_INIT}" == "false" ]]; then
+				echo "Overpass container ready to receive requests"
+			else
+				echo "Overpass container initialization complete. Exiting."
+				exit 0
+			fi
 		elif [[ $CURL_STATUS_CODE = "403" ]]; then
 			echo "Access denied when downloading planet file. Check your OVERPASS_PLANET_URL and OVERPASS_COOKIE_JAR_CONTENTS or USE_OAUTH_COOKIE_CLIENT"
 			cat /db/cookie.jar
