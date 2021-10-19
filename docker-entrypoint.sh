@@ -79,7 +79,7 @@ if [[ ! -f /db/init_done ]]; then
 					cp -r /app/etc/rules /db/db &&
 					chown -R overpass:overpass /db &&
 					echo "Updating" &&
-					/app/bin/update_overpass.sh "-O /db/planet.osm.bz2" &&
+					/app/bin/update_overpass.sh -O /db/planet.osm.bz2 &&
 					if [[ "${OVERPASS_USE_AREAS}" = "true" ]]; then
 						echo "Generating areas..." && /app/bin/osm3s_query --progress --rules --db-dir=/db/db </db/db/rules/areas.osm3s
 					fi &&

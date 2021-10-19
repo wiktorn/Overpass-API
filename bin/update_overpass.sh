@@ -47,7 +47,7 @@ fi
 				set -e
 			else
 				set +e
-				/app/venv/bin/pyosmium-get-changes -vvv "$1" --cookie /db/cookie.jar --server "${OVERPASS_DIFF_URL}" -o "${DIFF_FILE}" -f /db/replicate_id
+				/app/venv/bin/pyosmium-get-changes -vvv "$@" --cookie /db/cookie.jar --server "${OVERPASS_DIFF_URL}" -o "${DIFF_FILE}" -f /db/replicate_id
 				OSMIUM_STATUS=$?
 				set -e
 			fi
