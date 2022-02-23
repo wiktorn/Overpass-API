@@ -52,7 +52,7 @@ Container includes binaries of pyosmium (in `/app/venv/bin/`) and osmium-tool (i
 
 All data resides within the `/db` directory in the container.
 
-For convenience, a [`docker-compose.yml` template](./docker-compose.yml.template) is included.
+For convenience, a [`docker-compose.yml` template](./docker-compose.yml) is included.
 
 # Examples
 ## Overpass instance covering part of the world
