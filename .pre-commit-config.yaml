@@ -1,6 +1,6 @@
 repos:
 - repo: https://github.com/jumanjihouse/pre-commit-hooks
-  rev: 2.1.5  # or specific git tag
+  rev: 2.1.6  # or specific git tag
   hooks:
     - id: shellcheck
     - id: shfmt
