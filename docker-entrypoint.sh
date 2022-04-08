@@ -54,9 +54,13 @@ if [[ ! -f /db/init_done ]]; then
 			cp /db/db/replicate_id /db/replicate_id &&
 			cp -r /app/etc/rules /db/db &&
 			chown -R overpass:overpass /db &&
-			touch /db/init_done &&
+			touch /db/init_done
+		if [[ "${OVERPASS_STOP_AFTER_INIT}" == "false" ]]; then
 			echo "Overpass container ready to receive requests"
-		exit
+		else
+			echo "Overpass container initialization complete. Exiting."
+			exit 0
+		fi
 	fi
 
 	if [[ "$OVERPASS_MODE" = "init" ]]; then
