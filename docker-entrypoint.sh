@@ -49,12 +49,17 @@ if [[ ! -f /db/init_done ]]; then
 	chown overpass /db/cookie.jar
 
 	if [[ "$OVERPASS_MODE" = "clone" ]]; then
-		mkdir -p /db/db &&
-			/app/bin/download_clone.sh --db-dir=/db/db --source="${OVERPASS_CLONE_SOURCE}" --meta="${OVERPASS_META}" &&
-			cp /db/db/replicate_id /db/replicate_id &&
-			cp -r /app/etc/rules /db/db &&
-			chown -R overpass:overpass /db &&
-			touch /db/init_done
+		(
+			mkdir -p /db/db &&
+				/app/bin/download_clone.sh --db-dir=/db/db --source="${OVERPASS_CLONE_SOURCE}" --meta="${OVERPASS_META}" &&
+				cp /db/db/replicate_id /db/replicate_id &&
+				cp -r /app/etc/rules /db/db &&
+				chown -R overpass:overpass /db &&
+				touch /db/init_done
+		) || (
+			echo "Failed to clone overpass repository"
+			exit 1
+		)
 		if [[ "${OVERPASS_STOP_AFTER_INIT}" == "false" ]]; then
 			echo "Overpass container ready to receive requests"
 		else
