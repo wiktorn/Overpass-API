@@ -54,7 +54,7 @@ if [[ ! -f /db/init_done ]]; then
 				/app/bin/download_clone.sh --db-dir=/db/db --source="${OVERPASS_CLONE_SOURCE}" --meta="${OVERPASS_META}" &&
 				cp /db/db/replicate_id /db/replicate_id &&
 				cp -r /app/etc/rules /db/db &&
-				chown -R overpass:overpass /db &&
+				chown -R overpass:overpass /db/* &&
 				touch /db/init_done
 		) || (
 			echo "Failed to clone overpass repository"
@@ -86,7 +86,7 @@ if [[ ! -f /db/init_done ]]; then
 					/app/bin/init_osm3s.sh /db/planet.osm.bz2 /db/db /app "${META}" "--version=$(osmium fileinfo -e -g data.timestamp.last /db/planet.osm.bz2) --compression-method=${OVERPASS_COMPRESSION} --map-compression-method=${OVERPASS_COMPRESSION} --flush-size=${OVERPASS_FLUSH_SIZE}" &&
 					echo "Database created. Now updating it." &&
 					cp -r /app/etc/rules /db/db &&
-					chown -R overpass:overpass /db &&
+					chown -R overpass:overpass /db/* &&
 					echo "Updating" &&
 					/app/bin/update_overpass.sh -O /db/planet.osm.bz2 &&
 					if [[ "${OVERPASS_USE_AREAS}" = "true" ]]; then
@@ -94,7 +94,7 @@ if [[ ! -f /db/init_done ]]; then
 					fi &&
 					touch /db/init_done &&
 					rm /db/planet.osm.bz2 &&
-					chown -R overpass:overpass /db
+					chown -R overpass:overpass /db/*
 			) || (
 				echo "Failed to process planet file"
 				exit 1
