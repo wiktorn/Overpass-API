@@ -125,7 +125,7 @@ docker run \
 Using following environment variable:
 ```
 -e OVERPASS_HEALTHCHECK='
-  OVERPASS_RESPONSE=$(curl -s "http://localhost/api/interpreter?data=\[out:json\];node(1);out;" | jq -r .osm3s.timestamp_osm_base)
+  OVERPASS_RESPONSE=$(curl --noproxy "*" -s "http://localhost/api/interpreter?data=\[out:json\];node(1);out;" | jq -r .osm3s.timestamp_osm_base)
   OVERPASS_DATE=$(date -d "$OVERPASS_RESPONSE" +%s)
   TWO_DAYS_AGO=$(($(date +%s) - 2*86400)) ;
   if [ ${OVERPASS_DATE} -lt ${TWO_DAYS_AGO} ] ; then
