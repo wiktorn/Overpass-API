@@ -8,7 +8,7 @@ The following enviroment variables can be used to customize the setup:
 * `OVERPASS_MODE` - takes the value of either `init` or `clone`. Defaults to `clone`.
 * `OVERPASS_META` - (`init` mode only) `yes`, `no` or `attic` - passed to Overpass as `--meta` or `--keep-attic`.
 * `OVERPASS_PLANET_URL` - (`init` mode only) url to a "planet" file (e.g. https://planet.openstreetmap.org/planet/planet-latest.osm.bz2)
-* `OVERPASS_CLONE_SOURCE` - (`clone` mode only) the url to clone a copy of Overpass from. Defaults to http://dev.overpass-api.de/api_drolbr/, which uses minute diffs.
+* `OVERPASS_CLONE_SOURCE` - (`clone` mode only) the url to clone a copy of Overpass from. Defaults to https://dev.overpass-api.de/api_drolbr/, which uses minute diffs.
 * `OVERPASS_DIFF_URL` - url to a diff directory for updating the instance (e.g. https://planet.openstreetmap.org/replication/minute/).
 * `OVERPASS_COMPRESSION` - (`init` mode only) takes values of `no`, `gz` or `lz4`. Specifies compression mode of the Overpass database. Defaults to `gz`.
 * `OVERPASS_RULES_LOAD` - integer, desired load from area generation. Controls the ratio of sleep to work. A value of 1 will make the system sleep 99x times longer than it works, a value of 50 will result in sleep and work in equal measure, and a value of 100 will only sleep 3 seconds between each execution. Defaults to 1.

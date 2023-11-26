@@ -6,7 +6,7 @@ OVERPASS_META=${OVERPASS_META:-no}
 OVERPASS_MODE=${OVERPASS_MODE:-clone}
 OVERPASS_COMPRESSION=${OVERPASS_COMPRESSION:-gz}
 OVERPASS_FLUSH_SIZE=${OVERPASS_FLUSH_SIZE:-16}
-OVERPASS_CLONE_SOURCE=${OVERPASS_CLONE_SOURCE:-http://dev.overpass-api.de/api_drolbr/}
+OVERPASS_CLONE_SOURCE=${OVERPASS_CLONE_SOURCE:-https://dev.overpass-api.de/api_drolbr/}
 
 # this is used by other processes, so needs to be exported
 export OVERPASS_MAX_TIMEOUT=${OVERPASS_MAX_TIMEOUT:-1000s}
