@@ -91,6 +91,7 @@ RUN chmod a+rx /app/docker-entrypoint.sh /app/bin/update_overpass.sh /app/bin/ru
 
 ENV OVERPASS_RULES_LOAD=${{OVERPASS_RULES_LOAD:-1}}
 ENV OVERPASS_USE_AREAS=${{ENV_OVERPASS_USE_AREAS:-true}}
+ENV OVERPASS_ALLOW_DUPLICATE_QUERIES=no
 
 EXPOSE 80
 
