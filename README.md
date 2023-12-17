@@ -1,4 +1,3 @@
-
 # How to use this image
 
 By default, this image will clone an existing Overpass server for the whole planet, and make it available at `http://localhost/api/interpreter`.
@@ -24,17 +23,17 @@ The following enviroment variables can be used to customize the setup:
 * `OVERPASS_USE_AREAS` - if `false` initial area generation and the area updater process will be disabled. Default `true`.
 * `OVERPASS_HEALTHCHECK` - shell commands to execute to verify that image is healthy. `exit 1` in case of failures, `exit 0` when container is healthy. Default healthcheck queries overpass and verifies that there is reponse returned
 * `OVERPASS_STOP_AFTER_INIT` - if `false` the container will keep runing after init is complete. Otherwise container will be stopped after initialization process is complete. Default `true`
+* `OVERPASS_ALLOW_DUPLICATE_QUERIES` - if `yes`, duplicate queries (same query from the same IP address) will be allowed. Default `no`.
 
 ### Modes
 
 Image works in two modes `init` or `clone`. This affects how the instance gets initialized:
 
 * `init` - OSM data is downloaded from `OVERPASS_PLANET_URL`, which can be a full planet or partial planet dump.
-This file will then be indexed by Overpass and later updated using `OVERPASS_DIFF_URL`.
-
+  This file will then be indexed by Overpass and later updated using `OVERPASS_DIFF_URL`.
 * `clone` - data is copied from an existing server, given by `OVERPASS_CLONE_SOURCE`, and then updated using `OVERPASS_DIFF_URL`.
-This mode is faster to set up, as the OSM planet file is already indexed.
-The default clone source provides an Overpass instance using minute diffs covering the whole world (hourly or daily diffs will not work with this image).
+  This mode is faster to set up, as the OSM planet file is already indexed.
+  The default clone source provides an Overpass instance using minute diffs covering the whole world (hourly or daily diffs will not work with this image).
 
 ### Running
 
@@ -55,10 +54,13 @@ All data resides within the `/db` directory in the container.
 For convenience, a [`docker-compose.yml` template](./docker-compose.yml) is included.
 
 # Examples
+
 ## Overpass instance covering part of the world
+
 In this example the Overpass instance will be initialized with a planet file for Monaco downloaded from Geofabrik.
 Data will be stored in folder`/big/docker/overpass_db/` on the host machine and will not contain metadata as this example uses public Geofabrik extracts that do not contain metadata (such as changeset and user).
 Overpass will be available on port 12345 on the host machine.
+
 ```
 docker run \
   -e OVERPASS_META=yes \
@@ -73,8 +75,10 @@ docker run \
 ```
 
 ## Overpass clone covering whole world
+
 In this example Overpass instance will be initialized with data from main Overpass instance and updated with master planet diffs.
 Data will be stored in `/big/docker/overpass_clone_db/`  on the host machine and the API will be available on port 12346 on the host machine.
+
 ```
 docker run \
   -e OVERPASS_META=yes \
@@ -88,10 +92,12 @@ docker run \
 ```
 
 ## Overpass instance covering part of the world using cookie
+
 In this example Overpass instance will be initialized with planet file for Monaco downloaded from internal Geofabrik server.
 Data will be stored in `/big/docker/overpass_db/` on the host machine and the API will be available on port 12347 on the host machine.
 
 Prepare file with your credentials `/home/osm/oauth-settings.json`:
+
 ```json
 {
   "user": "your-username",
@@ -122,7 +128,9 @@ docker run \
 ```
 
 ## Healthcheck checking that instance is up-to-date
+
 Using following environment variable:
+
 ```
 -e OVERPASS_HEALTHCHECK='
   OVERPASS_RESPONSE=$(curl --noproxy "*" -s "http://localhost/api/interpreter?data=\[out:json\];node(1);out;" | jq -r .osm3s.timestamp_osm_base)
@@ -135,10 +143,11 @@ Using following environment variable:
   echo "Overpass date: ${OVERPASS_RESPONSE}"
 '
 ```
+
 healthcheck will verify the date of last update of Overpass instance and if data in instance are earlier than two days ago, healthcheck will fail.
 
-
 # How to use Overpass after deploying using above examples
+
 The Overpass API will be exposed on the port exposed by `docker run` - for example `http://localhost:12346/api/interpreter`.
 
 You may then use this directly as an Overpass API url, or use it within [Overpass Turbo](http://overpass-turbo.eu/).
