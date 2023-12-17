@@ -15,8 +15,13 @@ fi
 if [[ -n ${OVERPASS_TIME} ]]; then
 	DISPATCHER_ARGS+=("--time=${OVERPASS_TIME}")
 fi
+
 if [[ -n ${OVERPASS_SPACE} ]]; then
 	DISPATCHER_ARGS+=("--space=${OVERPASS_SPACE}")
+fi
+
+if [[ -n ${OVERPASS_ALLOW_DUPLICATE_QUERIES} ]]; then
+  DISPATCHER_ARGS+=("--allow-duplicate-queries=${OVERPASS_ALLOW_DUPLICATE_QUERIES}")
 fi
 
 find /db/db -type s -print0 | xargs -0 --no-run-if-empty rm && /app/bin/dispatcher "${DISPATCHER_ARGS[@]}"
