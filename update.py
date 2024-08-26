@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import html.parser
 import os
 import pathlib

@@ -4,7 +4,7 @@ set -e
 
 case "$1" in
 "build")
-	python update.py
+	./update.py
 
 	# docker build
 	find . -maxdepth 1 -type d -name '0.*' -exec sh -c 'docker build -t wiktorn/overpass-api:$(basename "$1") -f "$1"/Dockerfile .' sh {} \;

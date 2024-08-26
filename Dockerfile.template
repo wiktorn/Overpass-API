@@ -1,4 +1,4 @@
-FROM nginx:1.21 AS builder
+FROM nginx:mainline-bookworm-otel AS builder
 
 RUN apt-get update \
     && apt-get upgrade -y \
@@ -43,7 +43,7 @@ RUN  mkdir -p /app/src \
     && cp -r /app/src/rules /app/etc/rules \
     && rm -rf /app/src /app/src.tar.gz
 
-FROM nginx:1.21
+FROM nginx:mainline-bookworm-otel
 
 RUN apt-get update \
     && apt-get upgrade -y \
