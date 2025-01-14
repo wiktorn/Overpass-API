@@ -52,7 +52,7 @@ fi
 				set -e
 			fi
 		else
-			echo "/db/diffs/changes.osm exists. Trying to apply again."
+			echo "${DIFF_FILE} exists. Trying to apply again."
 		fi
 
 		# if DIFF_FILE is non-empty, try to process it
