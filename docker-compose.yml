@@ -14,10 +14,14 @@ services:
     volumes:
       # use a docker managed volume
       - overpass-db:/db
+      # If you want to mount your osm file as volume
+      # - ./monaco-latest.osm.bz2:/db/monaco-latest.osm.bz2
     environment:
       - OVERPASS_META=no
       - OVERPASS_MODE=init
       - OVERPASS_PLANET_URL=http://download.geofabrik.de/europe/monaco-latest.osm.bz2
+      # If you want to load your own file directly
+      # - OVERPASS_PLANET_URL=/db/monaco-latest.osm.bz2
       - OVERPASS_DIFF_URL=http://download.openstreetmap.fr/replication/europe/monaco/minute/
       - OVERPASS_UPDATE_SLEEP=3600
       - OVERPASS_USE_AREAS=false
