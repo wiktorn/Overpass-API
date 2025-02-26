@@ -72,13 +72,25 @@ if [[ ! -f /db/init_done ]]; then
 	fi
 
 	if [[ "$OVERPASS_MODE" = "init" ]]; then
-		CURL_STATUS_CODE=$(curl -L -b /db/cookie.jar -o /db/planet.osm.bz2 -w "%{http_code}" "${OVERPASS_PLANET_URL}")
-		# try again until it's allowed
-		while [ "$CURL_STATUS_CODE" = "429" ]; do
-			echo "Server responded with 429 Too many requests. Trying again in 5 minutes..."
-			sleep 300
+		#Check whether we have a local file and skip the slow copy process via curl and mv
+		if [[ "$OVERPASS_PLANET_URL" =~ ^file:// ]] || [[ -f $OVERPASS_PLANET_URL ]]; then
+			if [[ "$OVERPASS_PLANET_URL" =~ ^file:// ]]; then
+				#Remove the "file://" prefix from the string
+				OVERPASS_PLANET_FILE="{OVERPASS_PLANET_URL#file://}"
+			fi
+			#Copy the file to the correct position
+			mv OVERPASS_PLANET_FILE /db/planet.osm.bz2
+			#Mock the curl status code for further procedure
+			CURL_STATUS_CODE=000
+		else
 			CURL_STATUS_CODE=$(curl -L -b /db/cookie.jar -o /db/planet.osm.bz2 -w "%{http_code}" "${OVERPASS_PLANET_URL}")
-		done
+			# try again until it's allowed
+			while [ "$CURL_STATUS_CODE" = "429" ]; do
+				echo "Server responded with 429 Too many requests. Trying again in 5 minutes..."
+				sleep 300
+				CURL_STATUS_CODE=$(curl -L -b /db/cookie.jar -o /db/planet.osm.bz2 -w "%{http_code}" "${OVERPASS_PLANET_URL}")
+			done
+		fi
 		# for `file:///` scheme curl returns `000` HTTP status code
 		if [[ $CURL_STATUS_CODE = "200" || $CURL_STATUS_CODE = "000" ]]; then
 			(
