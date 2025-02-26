@@ -76,10 +76,12 @@ if [[ ! -f /db/init_done ]]; then
 		if [[ "$OVERPASS_PLANET_URL" =~ ^file:// ]] || [[ -f $OVERPASS_PLANET_URL ]]; then
 			if [[ "$OVERPASS_PLANET_URL" =~ ^file:// ]]; then
 				#Remove the "file://" prefix from the string
-				OVERPASS_PLANET_FILE="{OVERPASS_PLANET_URL#file://}"
+				OVERPASS_PLANET_FILE="${OVERPASS_PLANET_URL#file://}"
+			else
+				OVERPASS_PLANET_FILE=$OVERPASS_PLANET_URL
 			fi
 			#Copy the file to the correct position
-			mv OVERPASS_PLANET_FILE /db/planet.osm.bz2
+			cp "$OVERPASS_PLANET_FILE" /db/planet.osm.bz2
 			#Mock the curl status code for further procedure
 			CURL_STATUS_CODE=000
 		else
