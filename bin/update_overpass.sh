@@ -8,6 +8,7 @@ DIFF_FILE=/db/diffs/changes.osc
 OVERPASS_META=${OVERPASS_META:-no}
 OVERPASS_COMPRESSION=${OVERPASS_COMPRESSION:-gz}
 OVERPASS_FLUSH_SIZE=${OVERPASS_FLUSH_SIZE:-16}
+OVERPASS_DIFF_PREPROCESS=${OVERPASS_DIFF_PREPROCESS:-}
 
 if [ -z "$OVERPASS_DIFF_URL" ]; then
 	echo "No OVERPASS_DIFF_URL set. Skipping update."
@@ -59,6 +60,11 @@ fi
 		if [[ -s ${DIFF_FILE} ]]; then
 			VERSION=$(osmium fileinfo -e -g data.timestamp.last "${DIFF_FILE}" || (cp -f /db/replicate_id.backup /db/replicate_id && echo "Broken file" && cat "${DIFF_FILE}" && rm -f "${DIFF_FILE}" && exit 1))
 			if [[ -n "${VERSION// /}" ]]; then
+				#Check if an Preprocessing command exists and try to execute it
+				if [[ -n ${OVERPASS_DIFF_PREPROCESS+x} ]]; then
+					echo "Running preprocessing command: ${OVERPASS_DIFF_PREPROCESS}"
+					eval "${OVERPASS_DIFF_PREPROCESS}"
+				fi
 				echo /app/bin/update_from_dir --osc-dir="$(dirname ${DIFF_FILE})" --version="${VERSION}" "${UPDATE_ARGS[@]}"
 				/app/bin/update_from_dir --osc-dir="$(dirname ${DIFF_FILE})" --version="${VERSION}" "${UPDATE_ARGS[@]}"
 			else
