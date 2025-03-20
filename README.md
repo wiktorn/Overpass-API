@@ -14,6 +14,7 @@ The following enviroment variables can be used to customize the setup:
 * `OVERPASS_UPDATE_SLEEP` - integer, the delay between updates (seconds).
 * `OVERPASS_COOKIE_JAR_CONTENTS` - cookie-jar compatible content to be used when fetching planet.osm files and updates.
 * `OVERPASS_PLANET_PREPROCESS` - commands to be run before passing the planet.osm file to `update_database`, e.g. conversion from pbf to osm.bz2 using osmium.
+* `OVERPASS_DIFF_PREPROCESS` - commands to be run before passing the diff.osc file to `update_database`, e.g. extracting geo specific regions
 * `USE_OAUTH_COOKIE_CLIENT` - set to `yes` if you want to use oauth_cookie_client to update cookies before each update. Settings are read from /secrets/oauth-settings.json. Read the documentation [here](https://github.com/geofabrik/sendfile_osm_oauth_protector/blob/master/doc/client.md).
 * `OVERPASS_FASTCGI_PROCESSES` - number of fcgiwarp processes. Defaults to 4. Use higher values if you notice performance problems.
 * `OVERPASS_RATE_LIMIT` - set the maximum allowed number of concurrent accesses from a single IP address.
