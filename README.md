@@ -5,7 +5,7 @@ By default, this image will clone an existing Overpass server for the whole plan
 The following enviroment variables can be used to customize the setup:
 
 * `OVERPASS_MODE` - takes the value of either `init` or `clone`. Defaults to `clone`.
-* `OVERPASS_META` - (`init` mode only) `yes`, `no` or `attic` - passed to Overpass as `--meta` or `--keep-attic`.
+* `OVERPASS_META` - `attic`, `yes`, or `no`. Passed as `--keep-attic`, `--meta`, or nothing to `update_database` and `init`. Defaults to `no`.
 * `OVERPASS_PLANET_URL` - (`init` mode only) url to a "planet" file (e.g. https://planet.openstreetmap.org/planet/planet-latest.osm.bz2)
 * `OVERPASS_CLONE_SOURCE` - (`clone` mode only) the url to clone a copy of Overpass from. Defaults to https://dev.overpass-api.de/api_drolbr/, which uses minute diffs.
 * `OVERPASS_DIFF_URL` - url to a diff directory for updating the instance (e.g. https://planet.openstreetmap.org/replication/minute/).
