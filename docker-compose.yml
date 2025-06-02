@@ -5,7 +5,7 @@ version: '3.8'
 services:
   overpass:
     # specify the image here
-    image: wiktorn/overpass-api:0.7.62
+    image: wiktorn/overpass-api:0.7.56.9
     container_name: overpass
     # uncomment if you want to build the image yourself
     # build: .
