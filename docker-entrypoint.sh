@@ -82,7 +82,7 @@ if [[ ! -f /db/init_done ]]; then
 		# for `file:///` scheme curl returns `000` HTTP status code
 		if [[ $CURL_STATUS_CODE = "200" || $CURL_STATUS_CODE = "000" ]]; then
 			(
-				if [[ -n "${OVERPASS_PLANET_PREPROCESS+x}" ]]; then
+				if [[ -n "${OVERPASS_PLANET_PREPROCESS:+x}" ]]; then
 					echo "Running preprocessing command: ${OVERPASS_PLANET_PREPROCESS}"
 					eval "${OVERPASS_PLANET_PREPROCESS}"
 				fi &&
