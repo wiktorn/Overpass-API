@@ -22,5 +22,5 @@ services:
       - OVERPASS_UPDATE_SLEEP=3600
       - OVERPASS_USE_AREAS=false
     healthcheck:
-      test: ["CMD-SHELL", "curl --noproxy '*' -qf 'http://localhost/api/interpreter?data=\[out:json\];node(1);out;' | jq '.generator' |grep -q Overpass || exit 1"]
+      test: curl --noproxy '*' -qfg 'http://localhost/api/interpreter?data=[out:json];node(1);out;' | jq '.generator' |grep -q Overpass || exit 1
       start_period: 48h
