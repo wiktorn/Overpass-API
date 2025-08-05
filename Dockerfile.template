@@ -1,4 +1,4 @@
-FROM nginx:1.27-bookworm-otel AS builder
+FROM nginx:1.29-bookworm-otel AS builder
 
 RUN apt-get update \
     && apt-get upgrade -y \
@@ -38,12 +38,14 @@ RUN  mkdir -p /app/src \
     && automake --add-missing  \
     && autoconf \
     && CXXFLAGS='-O2' CFLAGS='-O2' ./configure --prefix=/app --enable-lz4 \
-    && make dist install clean \
+    && make dist \
+    && make -j $(nproc) \
+    && make install clean \
     && mkdir -p /db/diffs /app/etc \
     && cp -r /app/src/rules /app/etc/rules \
     && rm -rf /app/src /app/src.tar.gz
 
-FROM nginx:1.27-bookworm-otel
+FROM nginx:1.29-bookworm-otel
 
 RUN apt-get update \
     && apt-get upgrade -y \
@@ -90,8 +92,8 @@ RUN chmod a+rx /app/docker-entrypoint.sh /app/bin/update_overpass.sh /app/bin/ru
     /app/bin/oauth_cookie_client.py /app/bin/start_fcgiwarp.sh
 
 ENV OVERPASS_RULES_LOAD=${{OVERPASS_RULES_LOAD:-1}}
-ENV OVERPASS_USE_AREAS=${{ENV_OVERPASS_USE_AREAS:-true}}
-ENV OVERPASS_ALLOW_DUPLICATE_QUERIES=no
+ENV OVERPASS_USE_AREAS=${{OVERPASS_USE_AREAS:-true}}
+ENV OVERPASS_ALLOW_DUPLICATE_QUERIES=${{OVERPASS_ALLOW_DUPLICATE_QUERIES:-no}}
 
 EXPOSE 80
 
