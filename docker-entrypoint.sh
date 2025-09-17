@@ -36,11 +36,13 @@ for f in /docker-entrypoint-initdb.d/*; do
 	echo
 done
 
-if [[ ! -f /db/init_done ]]; then
+initialize_db_dir() {
 	echo "No database directory. Initializing"
 	touch /db/changes.log
 	mkdir -p /db/diffs
+}
 
+setup_cookie_jar() {
 	if [[ "${USE_OAUTH_COOKIE_CLIENT}" = "yes" ]]; then
 		/app/venv/bin/python /app/bin/oauth_cookie_client.py -o /db/cookie.jar -s /secrets/oauth-settings.json --format netscape
 		# necessary to add newline at the end as oauth_cookie_client doesn't do that
@@ -50,8 +52,13 @@ if [[ ! -f /db/init_done ]]; then
 		echo "${OVERPASS_COOKIE_JAR_CONTENTS}" >>/db/cookie.jar
 	fi
 	chown -R overpass:overpass /db/cookie.jar /db/changes.log /db/diffs
+}
 
-	if [[ "$OVERPASS_MODE" = "clone" ]]; then
+
+if [[ "$OVERPASS_MODE" = "clone" ]]; then
+	if [[ ! -f /db/init_done ]]; then
+		initialize_db_dir
+		setup_cookie_jar
 		(
 			mkdir -p /db/db &&
 				/app/bin/download_clone.sh --db-dir=/db/db --source="${OVERPASS_CLONE_SOURCE}" --meta="${OVERPASS_META}" &&
@@ -63,15 +70,14 @@ if [[ ! -f /db/init_done ]]; then
 			echo "Failed to clone overpass repository"
 			exit 1
 		)
-		if [[ "${OVERPASS_STOP_AFTER_INIT}" == "false" ]]; then
-			echo "Overpass container ready to receive requests"
-		else
-			echo "Overpass container initialization complete. Exiting."
-			exit 0
-		fi
 	fi
+fi
 
-	if [[ "$OVERPASS_MODE" = "init" ]]; then
+if [[ "$OVERPASS_MODE" = "init" ]]; then
+	if [[ ! -f /db/init_done ]]; then
+		initialize_db_dir
+		setup_cookie_jar
+		
 		CURL_STATUS_CODE=$(curl -L -b /db/cookie.jar -o /db/planet.osm.bz2 -w "%{http_code}" "${OVERPASS_PLANET_URL}")
 		# try again until it's allowed
 		while [ "$CURL_STATUS_CODE" = "429" ]; do
@@ -102,12 +108,6 @@ if [[ ! -f /db/init_done ]]; then
 				echo "Failed to process planet file"
 				exit 1
 			)
-			if [[ "${OVERPASS_STOP_AFTER_INIT}" == "false" ]]; then
-				echo "Overpass container ready to receive requests"
-			else
-				echo "Overpass container initialization complete. Exiting."
-				exit 0
-			fi
 		elif [[ $CURL_STATUS_CODE = "403" ]]; then
 			echo "Access denied when downloading planet file. Check your OVERPASS_PLANET_URL and OVERPASS_COOKIE_JAR_CONTENTS or USE_OAUTH_COOKIE_CLIENT"
 			cat /db/cookie.jar
@@ -117,6 +117,15 @@ if [[ ! -f /db/init_done ]]; then
 			cat /db/planet.osm.bz2
 			exit 1
 		fi
+	fi
+fi
+
+if [[ "$OVERPASS_MODE" = "init" || "$OVERPASS_MODE" = "clone" ]]; then
+	if [[ "${OVERPASS_STOP_AFTER_INIT}" == "false" ]]; then
+		echo "Overpass container ready to receive requests"
+	else
+		echo "Overpass container initialization complete. Exiting."
+		exit 0
 	fi
 fi
 
