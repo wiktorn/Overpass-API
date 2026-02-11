@@ -36,6 +36,12 @@ for f in /docker-entrypoint-initdb.d/*; do
 	echo
 done
 
+# deleting areas file if present. Otherwise the link to /db/db/osm3s_vX.X.X_areas will not be created and the area is not availible.
+if [ -f /dev/shm/osm3s_areas ]; then
+	echo "Found orphaned /dev/shm/osm3s_areas file. Deleting it."
+	rm /dev/shm/osm3s_areas
+fi
+
 if [[ ! -f /db/init_done ]]; then
 	echo "No database directory. Initializing"
 	touch /db/changes.log
