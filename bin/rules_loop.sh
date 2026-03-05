@@ -38,15 +38,20 @@ pushd "$EXEC_DIR" || exit 1
 
 while true; do
 	{
-		START=$(date +%s)
-		echo "$(date '+%F %T'): update started" >>"$DB_DIR/rules_loop.log"
-		./osm3s_query --progress --rules <"$DB_DIR/rules/areas.osm3s"
-		echo "$(date '+%F %T'): update finished" >>"$DB_DIR/rules_loop.log"
-		WORK_TIME=$(($(date +%s) - START))
-		SLEEP_TIME=$((WORK_TIME * 100 / CPU_LOAD - WORK_TIME))
-		# let SLEEP_TIME be at least 3 seconds
-		SLEEP_TIME=$((SLEEP_TIME < 3 ? 3 : SLEEP_TIME))
-		echo "It took $WORK_TIME to run the loop. Desired load is: ${CPU_LOAD}%. Sleeping: $SLEEP_TIME"
-		sleep "$SLEEP_TIME"
+        if [[ -z "${OVERPASS_DIFF_URL}" ]]; then
+            echo "OVERPASS_DIFF_URL is not set - updates disabled, assuming areas created on init, sleeping forever"
+            sleep infinity
+        else
+			START=$(date +%s)
+			echo "$(date '+%F %T'): update started" >>"$DB_DIR/rules_loop.log"
+			./osm3s_query --progress --rules <"$DB_DIR/rules/areas.osm3s"
+			echo "$(date '+%F %T'): update finished" >>"$DB_DIR/rules_loop.log"
+			WORK_TIME=$(($(date +%s) - START))
+			SLEEP_TIME=$((WORK_TIME * 100 / CPU_LOAD - WORK_TIME))
+			# let SLEEP_TIME be at least 3 seconds
+			SLEEP_TIME=$((SLEEP_TIME < 3 ? 3 : SLEEP_TIME))
+			echo "It took $WORK_TIME to run the loop. Desired load is: ${CPU_LOAD}%. Sleeping: $SLEEP_TIME"
+			sleep "$SLEEP_TIME"
+		fi
 	}
 done
