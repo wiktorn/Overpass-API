@@ -58,21 +58,66 @@ For convenience, a [`docker-compose.yml` template](./docker-compose.yml) is incl
 
 ## Overpass instance covering part of the world
 
-In this example the Overpass instance will be initialized with a planet file for Monaco downloaded from Geofabrik.
-Data will be stored in folder`/big/docker/overpass_db/` on the host machine and will not contain metadata as this example uses public Geofabrik extracts that do not contain metadata (such as changeset and user).
+As .osm.bz2 files are becoming increasingly rare, it is unfortunately often necessary to convert .osm.pbf files to .osm.bz2 files. This can be done either in a Docker container or on the host machine. Several examples of how to proceed are provided.
+
+Data will be stored in folder `/big/docker/overpass_db/` on the host machine and will not contain metadata as this example uses public Geofabrik extracts that do not contain metadata (such as changeset and user).
 Overpass will be available on port 12345 on the host machine.
+
+### .osm.bz2 files are directly provided
+
+In this example the Overpass instance will be initialized with a planet file for Monaco. Since there are currently no download servers with the .osm.bz2 file format available you need to get the file on your own or use a solution below.
+
 
 ```
 docker run \
   -e OVERPASS_META=yes \
   -e OVERPASS_MODE=init \
-  -e OVERPASS_PLANET_URL=http://download.geofabrik.de/europe/monaco-latest.osm.bz2 \
+  -e OVERPASS_PLANET_URL=http://YOUR-DOWNLOAD-SOURCE-HERE/monaco-latest.osm.bz2 \
   -e OVERPASS_DIFF_URL=http://download.openstreetmap.fr/replication/europe/monaco/minute/ \
   -e OVERPASS_RULES_LOAD=10 \
   -v /big/docker/overpass_db/:/db \
   -p 12345:80 \
   -i -t \
   --name overpass_monaco wiktorn/overpass-api
+```
+
+### Convert an .osm.pbf file to an .osm.bz2 file in the Docker container
+
+Because Geofabrik provides only PBF extracts with metadata, `osmium` is used in `OVERPASS_PLANET_PREPROCESS` to convert the `pbf` file to `osm.bz2` that's used by Overpass.
+
+```
+docker run \
+    -e OVERPASS_META=yes \
+    -e OVERPASS_MODE=init \
+    -e OVERPASS_PLANET_URL=https://download.geofabrik.de/europe/monaco-latest-internal.osm.pbf \
+    -e OVERPASS_DIFF_URL=https://download.geofabrik.de/europe/monaco-updates/ \
+    -e OVERPASS_RULES_LOAD=10 \
+    -e OVERPASS_COMPRESSION=gz \
+    -e OVERPASS_UPDATE_SLEEP=3600 \
+    -e OVERPASS_PLANET_PREPROCESS='mv /db/planet.osm.bz2 /db/planet.osm.pbf && osmium cat -o /db/planet.osm.bz2 /db/planet.osm.pbf && rm /db/planet.osm.pbf' \
+    -v /big/docker/overpass_db/:/db \
+    -p 12345:80 \
+    -i -t \
+    --name overpass_monaco wiktorn/overpass-api
+```
+
+### Convert an .osm.pbf file to an .osm.bz2 file on the host machine
+This requires osmium installed on your host machine but may be a little bit faster than the conversion in the Docker container.
+```
+curl -O https://download.geofabrik.de/europe/monaco-latest.osm.pbf
+osmium cat monaco-latest.osm.pbf -o /big/docker/overpass_db/planet.osm.bz2
+docker run \
+    -e OVERPASS_META=yes \
+    -e OVERPASS_MODE=init \
+    -e OVERPASS_PLANET_URL=file:///db/planet.osm.bz2 \
+    -e OVERPASS_DIFF_URL=https://download.geofabrik.de/europe/monaco-updates/ \
+    -e OVERPASS_RULES_LOAD=10 \
+    -e OVERPASS_COMPRESSION=gz \
+    -e OVERPASS_UPDATE_SLEEP=3600 \
+    -v /big/docker/overpass_db/:/db \
+    -p 12347:80 \
+    -i -t \
+    --name overpass_monaco wiktorn/overpass-api
 ```
 
 ## Overpass clone covering whole world
@@ -106,26 +151,6 @@ Prepare file with your credentials `/home/osm/oauth-settings.json`:
   "osm_host": "https://www.openstreetmap.org",
   "consumer_url": "https://osm-internal.download.geofabrik.de/get_cookie"
 }
-```
-
-Because Geofabrik provides only PBF extracts with metadata, `osmium` is used in `OVERPASS_PLANET_PREPROCESS` to convert the `pbf` file to `osm.bz2` that's used by Overpass.
-
-```
-docker run \
-    -e OVERPASS_META=yes \
-    -e OVERPASS_MODE=init \
-    -e OVERPASS_PLANET_URL=https://osm-internal.download.geofabrik.de/europe/monaco-latest-internal.osm.pbf \
-    -e OVERPASS_DIFF_URL=https://osm-internal.download.geofabrik.de/europe/monaco-updates/ \
-    -e OVERPASS_RULES_LOAD=10 \
-    -e OVERPASS_COMPRESSION=gz \
-    -e OVERPASS_UPDATE_SLEEP=3600 \
-    -e OVERPASS_PLANET_PREPROCESS='mv /db/planet.osm.bz2 /db/planet.osm.pbf && osmium cat -o /db/planet.osm.bz2 /db/planet.osm.pbf && rm /db/planet.osm.pbf' \
-    -e USE_OAUTH_COOKIE_CLIENT=yes \
-    --mount type=bind,source=/home/osm/oauth-settings.json,target=/secrets/oauth-settings.json \
-    -v /big/docker/overpass_db/:/db \
-    -p 12347:80 \
-    -i -t \
-    --name overpass_monaco wiktorn/overpass-api
 ```
 
 ## Healthcheck checking that instance is up-to-date
