@@ -26,7 +26,8 @@ RUN apt-get update \
         zlib1g \
         zlib1g-dev
 
-ADD http://dev.overpass-api.de/releases/osm-3s_v{version}.tar.gz /app/src.tar.gz
+ARG OVERPASS_VERSION
+ADD http://dev.overpass-api.de/releases/osm-3s_v${OVERPASS_VERSION}.tar.gz /app/src.tar.gz
 
 RUN  mkdir -p /app/src \
     && cd /app/src \
@@ -91,9 +92,9 @@ COPY docker-entrypoint.sh docker-healthcheck.sh /app/
 RUN chmod a+rx /app/docker-entrypoint.sh /app/bin/update_overpass.sh /app/bin/rules_loop.sh /app/bin/dispatcher_start.sh \
     /app/bin/oauth_cookie_client.py /app/bin/start_fcgiwarp.sh
 
-ENV OVERPASS_RULES_LOAD=${{OVERPASS_RULES_LOAD:-1}}
-ENV OVERPASS_USE_AREAS=${{OVERPASS_USE_AREAS:-true}}
-ENV OVERPASS_ALLOW_DUPLICATE_QUERIES=${{OVERPASS_ALLOW_DUPLICATE_QUERIES:-no}}
+ENV OVERPASS_RULES_LOAD=${OVERPASS_RULES_LOAD:-1}
+ENV OVERPASS_USE_AREAS=${OVERPASS_USE_AREAS:-true}
+ENV OVERPASS_ALLOW_DUPLICATE_QUERIES=${OVERPASS_ALLOW_DUPLICATE_QUERIES:-no}
 
 EXPOSE 80
 

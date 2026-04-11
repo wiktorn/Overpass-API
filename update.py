@@ -28,7 +28,7 @@ def main():
     response = urllib.request.urlopen(url)
     data = response.read().decode(response.headers.get_content_charset())
     parser.feed(data)
-    with open("Dockerfile.template") as f:
+    with open("Dockerfile") as f:
         template = f.read()
     for ver in parser.versions:
         if any((ver.startswith(x) for x in ('0.6', 'eta', '0.7.1', '0.7.2', '0.7.3', '0.7.4', '0.7.50', '0.7.52',
@@ -42,7 +42,7 @@ def main():
             shutil.rmtree(ver)
         os.mkdir(ver)
         with open(pathlib.Path(ver) / "Dockerfile", "w+") as f:
-            f.write(template.format(version=ver))
+            f.write(template.replace("${OVERPASS_VERSION}", ver))
         #for i in ("etc", "bin"):
         #    shutil.copytree(i, pathlib.Path(ver) / i)
         #shutil.copyfile("docker-entrypoint.sh", pathlib.Path(ver) / "docker-entrypoint.sh")

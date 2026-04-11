@@ -1,0 +1,27 @@
+name: Publish multi-arch Docker image
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    uses: docker/github-builder/.github/workflows/build.yml@v1
+    permissions:
+      contents: read
+      id-token: write
+    with:
+      output: image
+      push: true
+      platforms: linux/amd64,linux/arm64
+      build-args: OVERPASS_VERSION=${{ github.event.release.tag_name }}
+      meta-images: ${{ vars.DOCKERHUB_USERNAME }}/overpass-api
+      meta-tags: type=semver,pattern={{version}}
+    secrets:
+      registry-auths: |
+        - registry: docker.io
+          username: ${{ vars.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
