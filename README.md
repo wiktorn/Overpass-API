@@ -109,7 +109,7 @@ osmium cat monaco-latest.osm.pbf -o /big/docker/overpass_db/planet.osm.bz2
 docker run \
     -e OVERPASS_META=yes \
     -e OVERPASS_MODE=init \
-    -e OVERPASS_PLANET_URL=file:///db/planet.osm.bz2 \
+    -e OVERPASS_PLANET_URL=file:///db/monaco-latest.osm.bz2 \
     -e OVERPASS_DIFF_URL=https://download.geofabrik.de/europe/monaco-updates/ \
     -e OVERPASS_RULES_LOAD=10 \
     -e OVERPASS_COMPRESSION=gz \
