@@ -3,6 +3,12 @@ name: Publish multi-arch Docker image
 on:
   release:
     types: [published]
+  workflow_dispatch:
+    inputs:
+      overpass_version:
+        description: 'Version number to build (e.g. 0.7.62)'
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -17,7 +23,7 @@ jobs:
       output: image
       push: true
       platforms: linux/amd64,linux/arm64
-      build-args: OVERPASS_VERSION=${{ github.event.release.tag_name }}
+      build-args: OVERPASS_VERSION=${{ github.event.release.tag_name || inputs.overpass_version }}
       meta-images: ${{ vars.DOCKERHUB_USERNAME }}/overpass-api
       meta-tags: type=semver,pattern={{version}}
     secrets:
