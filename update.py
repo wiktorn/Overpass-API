@@ -1,10 +1,12 @@
 import html.parser
-import os
-import pathlib
-import shutil
 import urllib.request
 
 url = "http://dev.overpass-api.de/releases/"
+skip_prefixes = (
+    '0.6', 'eta', '0.7.1', '0.7.2', '0.7.3', '0.7.4', '0.7.50', '0.7.52',
+    '0.7.54.11',  # invalid CRC in archive
+    '0.7.51',  # no autoconf
+)
 
 
 class VersionFinder(html.parser.HTMLParser):
@@ -23,31 +25,19 @@ class VersionFinder(html.parser.HTMLParser):
                 self.versions.append(version)
 
 
-def main():
+def versions_to_build():
     parser = VersionFinder()
     response = urllib.request.urlopen(url)
     data = response.read().decode(response.headers.get_content_charset())
     parser.feed(data)
-    with open("Dockerfile") as f:
-        template = f.read()
-    for ver in parser.versions:
-        if any((ver.startswith(x) for x in ('0.6', 'eta', '0.7.1', '0.7.2', '0.7.3', '0.7.4', '0.7.50', '0.7.52',
-                                            '0.7.54.11',  # invalid CRC in archive
-                                            '0.7.51',  # no autoconf
-                                            ))) or \
-                ver == '0.7':
-            # ignore old releases
-            continue
-        if os.path.exists(ver):
-            shutil.rmtree(ver)
-        os.mkdir(ver)
-        with open(pathlib.Path(ver) / "Dockerfile", "w+") as f:
-            f.write(template.replace("${OVERPASS_VERSION}", ver))
-        #for i in ("etc", "bin"):
-        #    shutil.copytree(i, pathlib.Path(ver) / i)
-        #shutil.copyfile("docker-entrypoint.sh", pathlib.Path(ver) / "docker-entrypoint.sh")
-        #shutil.copyfile("requirements.txt", pathlib.Path(ver) / "requirements.txt")
+
+    return [
+        version for version in parser.versions
+        if version != '0.7'
+        and not any(version.startswith(skip_prefix) for skip_prefix in skip_prefixes)
+    ]
 
 
 if __name__ == '__main__':
-    main()
+    for version_to_build in versions_to_build():
+        print(version_to_build)
