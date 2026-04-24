@@ -25,8 +25,8 @@ case "$1" in
 "$1")
 	echo "Invalid argument $1"
 	echo "Valid arguments:"
-	echo "$0 build - to build docker images"
-	echo "$0 push - to push built images to docker hub"
+	echo "$0 build - to build Docker images"
+	echo "$0 push - to push built images to Docker Hub"
 	exit 1
 	;;
 esac
