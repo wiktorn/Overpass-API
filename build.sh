@@ -3,23 +3,20 @@
 set -e
 
 IMAGE=wiktorn/overpass-api
+VERSIONS=$(python update.py)
 
 case "$1" in
 "build")
-	versions=$(python update.py)
-
-	for version in $versions; do
+	for version in $VERSIONS; do
 		docker build --build-arg "OVERPASS_VERSION=${version}" -t "${IMAGE}:${version}" .
 	done
 
-	latest=$(echo "$versions" | sort -V | tail -n 1)
+	latest=$(echo "$VERSIONS" | sort -V | tail -n 1)
 	docker tag "${IMAGE}:${latest}" "${IMAGE}:latest"
 	;;
 
 "push")
-	versions=$(python update.py)
-
-	for version in $versions; do
+	for version in $VERSIONS; do
 		docker push "${IMAGE}:${version}"
 	done
 	docker push "${IMAGE}:latest"
