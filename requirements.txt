@@ -1,2 +1,2 @@
-osmium~=3.7.0
+osmium~=4.3.1
 requests
