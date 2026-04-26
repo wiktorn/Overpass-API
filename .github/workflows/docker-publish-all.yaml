@@ -1,0 +1,27 @@
+name: Publish all multi-arch Docker image versions
+
+on:
+  workflow_dispatch:
+
+jobs:
+  fetch_versions:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.versions.outputs.matrix }}
+    steps:
+      - name: Check out the repository to the runner
+        uses: actions/checkout@v6
+      - id: versions
+        run: echo matrix=$(python update.py ) >> "$GITHUB_OUTPUT"
+
+  call_build:
+    needs:
+      - fetch_versions
+    strategy:
+      max-parallel: 1
+      matrix: ${{ fromJson(needs.fetch_versions.outputs.matrix) }}
+    uses: ./.github/workflows/docker-publish.yml
+    with:
+      overpass_version: ${{ matrix.version}}
+    secrets:
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
