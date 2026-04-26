@@ -4,6 +4,7 @@ import json
 
 url = "http://dev.overpass-api.de/releases/"
 skip_prefixes = (
+    'atest',
     '0.6', 'eta', '0.7.1', '0.7.2', '0.7.3', '0.7.4', '0.7.50', '0.7.52',
     '0.7.54.11',  # invalid CRC in archive
     '0.7.51',  # no autoconf
