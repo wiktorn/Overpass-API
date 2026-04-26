@@ -36,7 +36,7 @@ jobs:
       cache: true
       cache-mode: max
       meta-images: ${{ vars.DOCKERHUB_USERNAME }}/overpass-api
-      meta-tags: type=semver,pattern={{version}}
+      meta-tags: type=raw,value=${{ github.event.release.tag_name || inputs.overpass_version }}
     secrets:
       registry-auths: |
         - registry: docker.io
