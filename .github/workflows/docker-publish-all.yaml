@@ -2,6 +2,11 @@ name: Publish all multi-arch Docker image versions
 
 on:
   workflow_dispatch:
+    inputs:
+      last_good_version:
+        description: 'Last version to skip'
+        required: false
+        type: string
 
 jobs:
   fetch_versions:
@@ -12,7 +17,10 @@ jobs:
       - name: Check out the repository to the runner
         uses: actions/checkout@v6
       - id: versions
-        run: echo matrix=$(python update.py ) >> "$GITHUB_OUTPUT"
+        run: |
+          VERSIONS=$(python update.py ${{ inputs.last_good_version }} )
+          echo $VERSIONS
+          echo matrix=$VERSIONS >> "$GITHUB_OUTPUT"
 
   call_build:
     needs:

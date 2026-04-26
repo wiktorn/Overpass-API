@@ -1,6 +1,7 @@
 import html.parser
 import urllib.request
 import json
+import sys
 
 url = "http://dev.overpass-api.de/releases/"
 skip_prefixes = (
@@ -32,16 +33,20 @@ def versions_to_build():
     data = response.read().decode(response.headers.get_content_charset())
     parser.feed(data)
 
-    return [
+    return list(sorted([
         version for version in parser.versions
         if version != 'v0.7'
         and not any(version.startswith(skip_prefix) for skip_prefix in skip_prefixes)
-    ]
+    ]))
 
 
 if __name__ == '__main__':
     versions = versions_to_build()
+    if len(sys.argv) > 1 and sys.argv[1]:
+        filter_predicate = lambda x: x > sys.argv[1]
+    else:
+        filter_predicate = lambda x: True
     github_matrix = {
-        "include": [{"version": v} for v in versions]
+        "include": [{"version": v} for v in versions if filter_predicate(v)]
     }
     print(json.dumps(github_matrix, indent=None))
