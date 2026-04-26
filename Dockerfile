@@ -32,12 +32,7 @@ ADD http://dev.overpass-api.de/releases/osm-3s_v${OVERPASS_VERSION}.tar.gz /app/
 RUN  mkdir -p /app/src \
     && cd /app/src \
     && tar -x -z --strip-components 1 -f ../src.tar.gz \
-    && autoscan \
-    && aclocal \
-    && autoheader \
-    && libtoolize \
-    && automake --add-missing  \
-    && autoconf \
+    && autoreconf -f -i \
     && CXXFLAGS='-O2' CFLAGS='-O2' ./configure --prefix=/app --enable-lz4 \
     && make dist \
     && make -j $(nproc) \
