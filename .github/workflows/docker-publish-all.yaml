@@ -1,0 +1,21 @@
+on:
+  workflow_dispatch:
+
+jobs:
+  fetch_versions:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.versions.outputs.matrix }}
+    steps:
+      - id: versions
+        run: echo matrix=$(python ./Overpass-API/update.py )
+
+  call_build:
+    needs:
+      - fetch_versions
+    strategy:
+      max-parallel: 1
+      matrix: ${{ fromJson(needs.fetch_versions.outputs.matrix) }}
+    uses: ./.github/workflows/docker-publish.yml
+    with:
+      overpass_version: ${{ matrix.version}}

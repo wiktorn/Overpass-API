@@ -9,6 +9,12 @@ on:
         description: 'Version number to build (e.g. 0.7.62)'
         required: true
         type: string
+  workflow_call:
+      inputs:
+        overpass_version:
+          description: 'Version number to build (e.g. 0.7.62)'
+          required: true
+          type: string
 
 permissions:
   contents: read

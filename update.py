@@ -1,5 +1,6 @@
 import html.parser
 import urllib.request
+import json
 
 url = "http://dev.overpass-api.de/releases/"
 skip_prefixes = (
@@ -39,5 +40,8 @@ def versions_to_build():
 
 
 if __name__ == '__main__':
-    for version_to_build in versions_to_build():
-        print(version_to_build)
+    versions = versions_to_build()
+    github_matrix = {
+        "include": [{"version": v} for v in versions]
+    }
+    print(json.dumps(github_matrix, indent=None))
