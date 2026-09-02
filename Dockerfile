@@ -1,4 +1,4 @@
-FROM nginx:1.29-bookworm-otel AS builder
+FROM nginx:1.31-otel AS builder
 
 RUN apt-get update \
     && apt-get upgrade -y \
@@ -41,7 +41,7 @@ RUN  mkdir -p /app/src \
     && cp -r /app/src/rules /app/etc/rules \
     && rm -rf /app/src /app/src.tar.gz
 
-FROM nginx:1.29-bookworm-otel
+FROM nginx:1.31-otel
 
 RUN apt-get update \
     && apt-get upgrade -y \
@@ -67,7 +67,8 @@ COPY --from=builder /app /app
 ADD https://raw.githubusercontent.com/geofabrik/sendfile_osm_oauth_protector/master/oauth_cookie_client.py \
     /app/bin/
 RUN sed -i -e 's/allow_read_prefs": "yes"/allow_read_prefs": "1"/g' /app/bin/oauth_cookie_client.py
-RUN addgroup overpass && adduser --home /db --disabled-password --gecos overpass --ingroup overpass overpass
+RUN groupadd overpass && useradd --home-dir /db -m -c "overpass" -g overpass overpass \
+    && chmod 750 /db && usermod -aG overpass nginx
 
 COPY requirements.txt /app/
 
