@@ -38,10 +38,17 @@ for f in /docker-entrypoint-initdb.d/*; do
 done
 
 # deleting areas file if present. Otherwise the link to /db/db/osm3s_vX.X.X_areas will not be created and the area is not availible.
-if [ -f /dev/shm/osm3s_areas ]; then
-	echo "Found orphaned /dev/shm/osm3s_areas file. Deleting it."
-	rm /dev/shm/osm3s_areas
-fi
+# Same for the main dispatcher's guard: a dispatcher that dies uncleanly
+# (SIGKILL, node reboot, container-runtime restart) leaves its POSIX shm
+# object behind, and on runtimes where /dev/shm persists across container
+# restarts, every subsequent start fails with "File_Error File exists 17".
+# At the container boundary, presence of either object means it is stale.
+for name in osm3s_osm_base osm3s_areas; do
+	if [ -f "/dev/shm/$name" ]; then
+		echo "Found orphaned /dev/shm/$name file. Deleting it."
+		rm "/dev/shm/$name"
+	fi
+done
 
 if [[ ! -f /db/init_done ]]; then
 	echo "No database directory. Initializing"
