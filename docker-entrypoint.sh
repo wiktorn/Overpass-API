@@ -37,7 +37,7 @@ for f in /docker-entrypoint-initdb.d/*; do
 	echo
 done
 
-# deleting areas file if present. Otherwise the link to /db/db/osm3s_vX.X.X_areas will not be created and the area is not availible.
+# deleting areas file if present. Otherwise the link to /db/db/osm3s_vX.X.X_areas will not be created and the area is not available.
 # Same for the main dispatcher's guard: a dispatcher that dies uncleanly
 # (SIGKILL, node reboot, container-runtime restart) leaves its POSIX shm
 # object behind, and on runtimes where /dev/shm persists across container
