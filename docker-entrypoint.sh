@@ -45,22 +45,23 @@ for f in /dev/shm/osm3s*; do
 	fi
 done
 
-chmod 755 /db
+chmod 755 /db || true
+touch /db/changes.log /db/replicate_id.backup
+mkdir -p /db/diffs
+
+if [[ "${USE_OAUTH_COOKIE_CLIENT}" = "yes" ]]; then
+	/app/venv/bin/python /app/bin/oauth_cookie_client.py -o /db/cookie.jar -s /secrets/oauth-settings.json --format netscape
+	# necessary to add newline at the end as oauth_cookie_client doesn't do that
+	echo >>/db/cookie.jar
+else
+	echo "# Netscape HTTP Cookie File" >/db/cookie.jar
+	echo "${OVERPASS_COOKIE_JAR_CONTENTS}" >>/db/cookie.jar
+fi
+chown overpass:overpass /db || true
+chown -R overpass:overpass /db/cookie.jar /db/changes.log /db/replicate_id.backup /db/diffs
 
 if [[ ! -f /db/init_done ]]; then
 	echo "No database directory. Initializing"
-	touch /db/changes.log
-	mkdir -p /db/diffs
-
-	if [[ "${USE_OAUTH_COOKIE_CLIENT}" = "yes" ]]; then
-		/app/venv/bin/python /app/bin/oauth_cookie_client.py -o /db/cookie.jar -s /secrets/oauth-settings.json --format netscape
-		# necessary to add newline at the end as oauth_cookie_client doesn't do that
-		echo >>/db/cookie.jar
-	else
-		echo "# Netscape HTTP Cookie File" >/db/cookie.jar
-		echo "${OVERPASS_COOKIE_JAR_CONTENTS}" >>/db/cookie.jar
-	fi
-	chown -R overpass:overpass /db/cookie.jar /db/changes.log /db/diffs
 
 	if [[ "$OVERPASS_MODE" = "clone" ]]; then
 		(
