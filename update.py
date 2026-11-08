@@ -27,6 +27,12 @@ class VersionFinder(html.parser.HTMLParser):
                 self.versions.append(version)
 
 
+def version_key(version):
+    if version == 'latest':
+        return (float('inf'),)
+    return tuple(int(part) for part in version.lstrip('v').split('.'))
+
+
 def versions_to_build():
     parser = VersionFinder()
     response = urllib.request.urlopen(url)
@@ -37,13 +43,14 @@ def versions_to_build():
         version for version in parser.versions
         if version != 'v0.7'
         and not any(version.startswith(skip_prefix) for skip_prefix in skip_prefixes)
-    ]))
+    ], key=version_key))
 
 
 if __name__ == '__main__':
     versions = versions_to_build()
     if len(sys.argv) > 1 and sys.argv[1]:
-        filter_predicate = lambda x: x > sys.argv[1]
+        min_key = version_key(sys.argv[1])
+        filter_predicate = lambda x: version_key(x) > min_key
     else:
         filter_predicate = lambda x: True
     github_matrix = {
