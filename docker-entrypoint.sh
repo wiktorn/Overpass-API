@@ -45,6 +45,8 @@ for f in /dev/shm/osm3s*; do
 	fi
 done
 
+chmod 755 /db
+
 if [[ ! -f /db/init_done ]]; then
 	echo "No database directory. Initializing"
 	touch /db/changes.log
