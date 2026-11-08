@@ -36,7 +36,7 @@ Image works in two modes `init` or `clone`. This affects how the instance gets i
   This file will then be indexed by Overpass and later updated using `OVERPASS_DIFF_URL`.
 * `clone` - data is copied from an existing server, given by `OVERPASS_CLONE_SOURCE`, and then updated using `OVERPASS_DIFF_URL`.
   This mode is faster to set up, as the OSM planet file is already indexed.
-  The default clone source provides an Overpass instance using minute diffs covering the whole world (hourly or daily diffs will not work with this image).
+  The default clone source provides an Overpass instance using minute diffs covering the whole world (if `OVERPASS_DIFF_URL` is set to hourly or daily diffs, the replication sequence ID is automatically translated from the cloned minute state timestamp).
 
 ### Running
 
