@@ -42,7 +42,8 @@ while true; do
 			echo "OVERPASS_DIFF_URL is not set - updates disabled, assuming areas created on init, sleeping forever"
 			sleep infinity
 		else
-			while ! compgen -G "/dev/shm/osm3s*osm_base" >/dev/null || ! compgen -G "/dev/shm/osm3s*areas" >/dev/null || ! compgen -G "${DB_DIR}/*osm_base*" >/dev/null || ! compgen -G "${DB_DIR}/*areas*" >/dev/null; do
+			SOCKET_DIR="${OVERPASS_SOCKET_DIR:-$DB_DIR}"
+			while ! compgen -G "/dev/shm/osm3s*osm_base" >/dev/null || ! compgen -G "/dev/shm/osm3s*areas" >/dev/null || ! compgen -G "${SOCKET_DIR}/*osm_base*" >/dev/null || ! compgen -G "${SOCKET_DIR}/*areas*" >/dev/null; do
 				echo "Waiting for dispatchers to start..."
 				sleep 1
 			done

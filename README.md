@@ -26,6 +26,7 @@ The following enviroment variables can be used to customize the setup:
 * `OVERPASS_HEALTHCHECK` - shell commands to execute to verify that image is healthy. `exit 1` in case of failures, `exit 0` when container is healthy. Default healthcheck queries overpass and verifies that there is reponse returned
 * `OVERPASS_STOP_AFTER_INIT` - if `false` the container will keep runing after init is complete. Otherwise container will be stopped after initialization process is complete. Default `true`
 * `OVERPASS_ALLOW_DUPLICATE_QUERIES` - if `yes`, duplicate queries (same query from the same IP address) will be allowed. Default `no`.
+* `OVERPASS_SOCKET_DIR` - directory where Overpass dispatcher Unix domain sockets will be created (passed as `--socket-dir` to `dispatcher`). Useful when `/db` is mounted on a filesystem that does not support Unix sockets (such as NFS or SMB).
 
 ### Modes
 
