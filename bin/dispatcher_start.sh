@@ -14,18 +14,18 @@ else
 	elif [[ "${OVERPASS_META}" == "yes" ]]; then
 		DISPATCHER_ARGS+=("--meta")
 	fi
+fi
 
-	if [[ -n ${OVERPASS_RATE_LIMIT} ]]; then
-		DISPATCHER_ARGS+=("--rate-limit=${OVERPASS_RATE_LIMIT}")
-	fi
+if [[ -n ${OVERPASS_RATE_LIMIT} ]]; then
+	DISPATCHER_ARGS+=("--rate-limit=${OVERPASS_RATE_LIMIT}")
+fi
 
-	if [[ -n ${OVERPASS_TIME} ]]; then
-		DISPATCHER_ARGS+=("--time=${OVERPASS_TIME}")
-	fi
+if [[ -n ${OVERPASS_TIME} ]]; then
+	DISPATCHER_ARGS+=("--time=${OVERPASS_TIME}")
+fi
 
-	if [[ -n ${OVERPASS_SPACE} ]]; then
-		DISPATCHER_ARGS+=("--space=${OVERPASS_SPACE}")
-	fi
+if [[ -n ${OVERPASS_SPACE} ]]; then
+	DISPATCHER_ARGS+=("--space=${OVERPASS_SPACE}")
 fi
 
 if [[ -n ${OVERPASS_ALLOW_DUPLICATE_QUERIES} ]]; then

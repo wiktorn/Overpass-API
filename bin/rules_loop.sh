@@ -36,6 +36,12 @@ fi
 
 pushd "$EXEC_DIR" || exit 1
 
+if [[ -f "$DB_DIR/rules/areas.osm3s" ]]; then
+	AREAS_LIMIT=${OVERPASS_SPACE:+$((OVERPASS_SPACE / 2))}
+	AREAS_LIMIT=${AREAS_LIMIT:-4294967296}
+	sed -i "s/element-limit=\"[0-9]*\"/element-limit=\"${AREAS_LIMIT}\"/g" "$DB_DIR/rules/areas.osm3s"
+fi
+
 while true; do
 	{
 		if [[ -z "${OVERPASS_DIFF_URL}" ]]; then
