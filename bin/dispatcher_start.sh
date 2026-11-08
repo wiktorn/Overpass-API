@@ -32,6 +32,12 @@ if [[ -n ${OVERPASS_ALLOW_DUPLICATE_QUERIES} ]]; then
 	DISPATCHER_ARGS+=("--allow-duplicate-queries=${OVERPASS_ALLOW_DUPLICATE_QUERIES}")
 fi
 
+SOCKET_DIR="${OVERPASS_SOCKET_DIR:-/db/db}"
+if [[ -n ${OVERPASS_SOCKET_DIR} ]]; then
+	mkdir -p "${OVERPASS_SOCKET_DIR}"
+	DISPATCHER_ARGS+=("--socket-dir=${OVERPASS_SOCKET_DIR}")
+fi
+
 find /dev/shm -maxdepth 1 -name "${SHM_PATTERN}" -print0 | xargs -0 --no-run-if-empty rm -f
-find /db/db -maxdepth 1 -type s -name "${SOCKET_PATTERN}" -print0 | xargs -0 --no-run-if-empty rm -f
+find "${SOCKET_DIR}" /db/db -maxdepth 1 -type s -name "${SOCKET_PATTERN}" -print0 | xargs -0 --no-run-if-empty rm -f
 exec /app/bin/dispatcher "${DISPATCHER_ARGS[@]}"
