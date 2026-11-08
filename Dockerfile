@@ -74,7 +74,7 @@ COPY requirements.txt /app/
 RUN python3 -m venv /app/venv \
     && /app/venv/bin/pip install -r /app/requirements.txt --only-binary osmium
 
-RUN mkdir /nginx /docker-entrypoint-initdb.d && chown nginx:nginx /nginx && chown -R overpass:overpass /db
+RUN mkdir /nginx /docker-entrypoint-initdb.d && chown nginx:nginx /nginx && chown -R overpass:overpass /db && chmod 755 /db
 
 COPY etc/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
