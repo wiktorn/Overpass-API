@@ -73,7 +73,13 @@ if [[ ! -f /db/init_done ]]; then
 		(
 			mkdir -p /db/db &&
 				/app/bin/download_clone.sh --db-dir=/db/db --source="${OVERPASS_CLONE_SOURCE}" --meta="${OVERPASS_META}" &&
-				cp /db/db/replicate_id /db/replicate_id &&
+				if [[ -n "${OVERPASS_DIFF_URL}" && ! "${OVERPASS_DIFF_URL%/}" =~ /minute$ ]]; then
+					CLONE_TIMESTAMP=$(/app/venv/bin/python -c 'import osmium.replication.server as rserver; seq = int(open("/db/db/replicate_id").read().strip()); info = rserver.ReplicationServer("https://planet.openstreetmap.org/replication/minute/").get_state_info(seq); print(info.timestamp.strftime("%Y-%m-%dT%H:%M:%SZ"))') &&
+						rm -f /db/replicate_id &&
+						/app/venv/bin/pyosmium-get-changes -vvv -D "${CLONE_TIMESTAMP}" --cookie /db/cookie.jar --server "${OVERPASS_DIFF_URL}" -f /db/replicate_id
+				else
+					cp /db/db/replicate_id /db/replicate_id
+				fi &&
 				cp -r /app/etc/rules /db/db &&
 				chown -R overpass:overpass /db/* &&
 				touch /db/init_done
