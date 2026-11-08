@@ -60,6 +60,12 @@ fi
 chown overpass:overpass /db || true
 chown -R overpass:overpass /db/cookie.jar /db/changes.log /db/replicate_id.backup /db/diffs
 
+if [[ -n "${OVERPASS_SOCKET_DIR}" ]]; then
+	mkdir -p "${OVERPASS_SOCKET_DIR}"
+	chown -R overpass:overpass "${OVERPASS_SOCKET_DIR}"
+	chmod 755 "${OVERPASS_SOCKET_DIR}"
+fi
+
 if [[ ! -f /db/init_done ]]; then
 	echo "No database directory. Initializing"
 

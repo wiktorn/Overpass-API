@@ -42,7 +42,8 @@ while true; do
 			echo "OVERPASS_DIFF_URL is not set - updates disabled, assuming areas created on init, sleeping forever"
 			sleep infinity
 		else
-			while [[ -z "$(find /dev/shm -maxdepth 1 -name 'osm3s*osm_base' -print -quit)" || -z "$(find /dev/shm -maxdepth 1 -name 'osm3s*areas' -print -quit)" || -z "$(find "${DB_DIR}" -maxdepth 1 -type s -name 'osm3s*osm_base' -print -quit)" || -z "$(find "${DB_DIR}" -maxdepth 1 -type s -name 'osm3s*areas' -print -quit)" ]]; do
+			SOCKET_DIR="${OVERPASS_SOCKET_DIR:-$DB_DIR}"
+			while [[ -z "$(find /dev/shm -maxdepth 1 -name 'osm3s*osm_base' -print -quit)" || -z "$(find /dev/shm -maxdepth 1 -name 'osm3s*areas' -print -quit)" || -z "$(find "${SOCKET_DIR}" -maxdepth 1 -type s -name 'osm3s*osm_base' -print -quit)" || -z "$(find "${SOCKET_DIR}" -maxdepth 1 -type s -name 'osm3s*areas' -print -quit)" ]]; do
 				echo "Waiting for dispatchers to start..."
 				sleep 1
 			done
