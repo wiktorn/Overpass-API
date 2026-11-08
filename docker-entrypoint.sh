@@ -111,6 +111,9 @@ if [[ ! -f /db/init_done ]]; then
 					echo "Updating" &&
 					/app/bin/update_overpass.sh -O /db/planet.osm.bz2 &&
 					if [[ "${OVERPASS_USE_AREAS}" = "true" ]]; then
+						if [[ -n "${OVERPASS_SPACE}" ]]; then
+							sed -i "s/element-limit=\"[0-9]*\"/element-limit=\"${OVERPASS_SPACE}\"/g" /db/db/rules/areas.osm3s
+						fi
 						echo "Generating areas..." && /app/bin/osm3s_query --progress --rules --db-dir=/db/db </db/db/rules/areas.osm3s
 					fi &&
 					touch /db/init_done &&
