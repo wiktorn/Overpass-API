@@ -49,8 +49,8 @@ fi
 
 while true; do
 	{
-		if [[ -z "${OVERPASS_DIFF_URL}" ]]; then
-			echo "OVERPASS_DIFF_URL is not set - updates disabled, assuming areas created on init, sleeping forever"
+		if [[ -z "${OVERPASS_DIFF_URL}" && -s "$DB_DIR/areas.bin" ]]; then
+			echo "OVERPASS_DIFF_URL is not set - updates disabled, areas already exist, sleeping forever"
 			sleep infinity
 		else
 			SOCKET_DIR="${OVERPASS_SOCKET_DIR:-$DB_DIR}"
