@@ -68,6 +68,7 @@ fi
 
 if [[ ! -f /db/init_done ]]; then
 	echo "No database directory. Initializing"
+	OVERPASS_STOP_AFTER_INIT=${OVERPASS_STOP_AFTER_INIT:-true}
 
 	if [[ "$OVERPASS_MODE" = "clone" ]]; then
 		(
@@ -87,12 +88,6 @@ if [[ ! -f /db/init_done ]]; then
 			echo "Failed to clone overpass repository"
 			exit 1
 		)
-		if [[ "${OVERPASS_STOP_AFTER_INIT}" == "false" ]]; then
-			echo "Overpass container ready to receive requests"
-		else
-			echo "Overpass container initialization complete. Exiting."
-			exit 0
-		fi
 	fi
 
 	if [[ "$OVERPASS_MODE" = "init" ]]; then
@@ -130,12 +125,6 @@ if [[ ! -f /db/init_done ]]; then
 				echo "Failed to process planet file"
 				exit 1
 			)
-			if [[ "${OVERPASS_STOP_AFTER_INIT}" == "false" ]]; then
-				echo "Overpass container ready to receive requests"
-			else
-				echo "Overpass container initialization complete. Exiting."
-				exit 0
-			fi
 		elif [[ $CURL_STATUS_CODE = "403" ]]; then
 			echo "Access denied when downloading planet file. Check your OVERPASS_PLANET_URL and OVERPASS_COOKIE_JAR_CONTENTS or USE_OAUTH_COOKIE_CLIENT"
 			cat /db/cookie.jar
@@ -146,6 +135,13 @@ if [[ ! -f /db/init_done ]]; then
 			exit 1
 		fi
 	fi
+fi
+
+if [[ "${OVERPASS_STOP_AFTER_INIT:-false}" == "false" ]]; then
+	echo "Overpass container ready to receive requests"
+else
+	echo "Overpass container initialization complete. Exiting."
+	exit 0
 fi
 
 # shellcheck disable=SC2016 # ignore SC2016 (variables within single quotes) as this is exactly what we want to do here
