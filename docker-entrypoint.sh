@@ -104,12 +104,13 @@ if [[ ! -f /db/init_done ]]; then
 					echo "Running preprocessing command: ${OVERPASS_PLANET_PREPROCESS}"
 					eval "${OVERPASS_PLANET_PREPROCESS}"
 				fi &&
-					/app/bin/init_osm3s.sh /db/planet.osm.bz2 /db/db /app "${META}" "--version=$(osmium fileinfo -e -g data.timestamp.last /db/planet.osm.bz2) --compression-method=${OVERPASS_COMPRESSION} --map-compression-method=${OVERPASS_COMPRESSION} --flush-size=${OVERPASS_FLUSH_SIZE}" &&
+					VERSION=$(osmium fileinfo -e -g data.timestamp.last /db/planet.osm.bz2) &&
+					/app/bin/init_osm3s.sh /db/planet.osm.bz2 /db/db /app "${META}" "--version=${VERSION} --compression-method=${OVERPASS_COMPRESSION} --map-compression-method=${OVERPASS_COMPRESSION} --flush-size=${OVERPASS_FLUSH_SIZE}" &&
 					echo "Database created. Now updating it." &&
 					cp -r /app/etc/rules /db/db &&
 					chown -R overpass:overpass /db/* &&
 					echo "Updating" &&
-					/app/bin/update_overpass.sh -O /db/planet.osm.bz2 &&
+					/app/bin/update_overpass.sh -D "${VERSION}" &&
 					if [[ "${OVERPASS_USE_AREAS}" = "true" ]]; then
 						if [[ -n "${OVERPASS_SPACE}" ]]; then
 							sed -i "s/element-limit=\"[0-9]*\"/element-limit=\"${OVERPASS_SPACE}\"/g" /db/db/rules/areas.osm3s
