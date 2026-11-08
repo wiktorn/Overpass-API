@@ -37,11 +37,13 @@ for f in /docker-entrypoint-initdb.d/*; do
 	echo
 done
 
-# deleting areas file if present. Otherwise the link to /db/db/osm3s_vX.X.X_areas will not be created and the area is not availible.
-if [ -f /dev/shm/osm3s_areas ]; then
-	echo "Found orphaned /dev/shm/osm3s_areas file. Deleting it."
-	rm /dev/shm/osm3s_areas
-fi
+# deleting shared memory files if present. Otherwise the links to /db/db/osm3s_vX.X.X_* will not be created and the dispatcher will fail to start.
+for f in /dev/shm/osm3s*; do
+	if [ -f "$f" ]; then
+		echo "Found orphaned $f file. Deleting it."
+		rm "$f"
+	fi
+done
 
 if [[ ! -f /db/init_done ]]; then
 	echo "No database directory. Initializing"
