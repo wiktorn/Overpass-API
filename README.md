@@ -107,7 +107,7 @@ docker run \
 This requires osmium installed on your host machine but may be a little bit faster than the conversion in the Docker container.
 ```
 curl -O https://download.geofabrik.de/europe/monaco-latest.osm.pbf
-osmium cat monaco-latest.osm.pbf -o /big/docker/overpass_db/planet.osm.bz2
+osmium cat monaco-latest.osm.pbf -o /big/docker/overpass_db/monaco-latest.osm.bz2
 docker run \
     -e OVERPASS_META=yes \
     -e OVERPASS_MODE=init \
