@@ -25,7 +25,12 @@ if [[ -z $1 ]]; then
 fi
 
 CPU_LOAD=${2:-100}
-DB_DIR="$(pwd)/$1"
+DB_DIR="$1"
+if [[ ! ${DB_DIR:0:1} == "/" ]]; then
+	{
+		DB_DIR="$(pwd)/$DB_DIR"
+	}
+fi
 
 EXEC_DIR="$(dirname "$0")/"
 if [[ ! ${EXEC_DIR:0:1} == "/" ]]; then
