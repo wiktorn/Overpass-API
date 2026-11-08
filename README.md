@@ -174,6 +174,20 @@ Using following environment variable:
 
 healthcheck will verify the date of last update of Overpass instance and if data in instance are earlier than two days ago, healthcheck will fail.
 
+## Triggering updates manually / on demand
+
+To disable automatic background updates and trigger updates only on demand, start the container with `OVERPASS_DIFF_URL` unset (or empty). You can then trigger an update whenever needed using `docker exec`:
+
+```sh
+docker exec -u overpass -e OVERPASS_DIFF_URL=https://download.geofabrik.de/europe/monaco-updates/ overpass_monaco /app/bin/update_overpass.sh
+```
+
+If `OVERPASS_USE_AREAS=true` is enabled, you can also trigger area regeneration after the update finishes:
+
+```sh
+docker exec -u overpass overpass_monaco sh -c '/app/bin/osm3s_query --progress --rules </db/db/rules/areas.osm3s'
+```
+
 # How to use Overpass after deploying using above examples
 
 The Overpass API will be exposed on the port exposed by `docker run` - for example `http://localhost:12346/api/interpreter`.
