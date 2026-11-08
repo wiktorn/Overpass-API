@@ -21,7 +21,7 @@ services:
       - OVERPASS_DIFF_URL=http://download.openstreetmap.fr/replication/europe/monaco/minute/
       - OVERPASS_UPDATE_SLEEP=3600
       - OVERPASS_USE_AREAS=false
-      - OVERPASS_PLANET_PREPROCESS='mv /db/planet.osm.bz2 /db/planet.osm.pbf && osmium cat -o /db/planet.osm.bz2 /db/planet.osm.pbf && rm /db/planet.osm.pbf'
+      - OVERPASS_PLANET_PREPROCESS=mv /db/planet.osm.bz2 /db/planet.osm.pbf && osmium cat -o /db/planet.osm.bz2 /db/planet.osm.pbf && rm /db/planet.osm.pbf
     healthcheck:
       test: curl --noproxy '*' -qfg 'http://localhost/api/interpreter?data=[out:json];node(1);out;' | jq '.generator' |grep -q Overpass || exit 1
       start_period: 48h
