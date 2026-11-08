@@ -3,7 +3,7 @@
 set -e
 
 IMAGE=wiktorn/overpass-api
-VERSIONS=$(python update.py)
+VERSIONS=$(python update.py | jq -r '.include[].version')
 
 case "$1" in
 "build")
