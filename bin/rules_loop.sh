@@ -38,10 +38,14 @@ pushd "$EXEC_DIR" || exit 1
 
 while true; do
 	{
-        if [[ -z "${OVERPASS_DIFF_URL}" ]]; then
-            echo "OVERPASS_DIFF_URL is not set - updates disabled, assuming areas created on init, sleeping forever"
-            sleep infinity
-        else
+		if [[ -z "${OVERPASS_DIFF_URL}" ]]; then
+			echo "OVERPASS_DIFF_URL is not set - updates disabled, assuming areas created on init, sleeping forever"
+			sleep infinity
+		else
+			while [[ -z "$(find /dev/shm -maxdepth 1 -name 'osm3s*osm_base' -print -quit)" || -z "$(find /dev/shm -maxdepth 1 -name 'osm3s*areas' -print -quit)" || -z "$(find "${DB_DIR}" -maxdepth 1 -type s -name 'osm3s*osm_base' -print -quit)" || -z "$(find "${DB_DIR}" -maxdepth 1 -type s -name 'osm3s*areas' -print -quit)" ]]; do
+				echo "Waiting for dispatchers to start..."
+				sleep 1
+			done
 			START=$(date +%s)
 			echo "$(date '+%F %T'): update started" >>"$DB_DIR/rules_loop.log"
 			./osm3s_query --progress --rules <"$DB_DIR/rules/areas.osm3s"
