@@ -62,7 +62,7 @@ fi
 			VERSION=$(osmium fileinfo -e -g data.timestamp.last "${DIFF_FILE}" || (cp -f /db/replicate_id.backup /db/replicate_id && echo "Broken file" && cat "${DIFF_FILE}" && rm -f "${DIFF_FILE}" && exit 1))
 			if [[ -n "${VERSION// /}" ]]; then
 				#Check if an Preprocessing command exists and try to execute it
-				if [[ -n ${OVERPASS_DIFF_PREPROCESS+x} ]]; then
+				if [[ -n ${OVERPASS_DIFF_PREPROCESS:+x} ]]; then
 					echo "Running preprocessing command: ${OVERPASS_DIFF_PREPROCESS}"
 					eval "${OVERPASS_DIFF_PREPROCESS}"
 				fi
