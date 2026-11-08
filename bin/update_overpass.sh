@@ -34,6 +34,7 @@ fi
 
 	if [[ "${USE_OAUTH_COOKIE_CLIENT}" = "yes" ]]; then
 		/app/venv/bin/python /app/bin/oauth_cookie_client.py -o /db/cookie.jar -s /secrets/oauth-settings.json --format netscape
+		echo >>/db/cookie.jar
 	fi
 
 	while true; do
