@@ -46,6 +46,7 @@ FROM nginx:1.31-otel
 RUN apt-get update \
     && apt-get upgrade -y \
     && apt-get install --no-install-recommends --no-install-suggests -y \
+        aria2 \
         bash \
         bzip2 \
         ca-certificates \

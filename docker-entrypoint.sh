@@ -91,13 +91,23 @@ if [[ ! -f /db/init_done ]]; then
 	fi
 
 	if [[ "$OVERPASS_MODE" = "init" ]]; then
-		CURL_STATUS_CODE=$(curl -L -b /db/cookie.jar -o /db/planet.osm.bz2 -w "%{http_code}" "${OVERPASS_PLANET_URL}")
+		CURL_RANGE=()
+		if [[ "${OVERPASS_PLANET_URL}" =~ ^https?:// ]]; then
+			CURL_RANGE=(--range 0-0)
+		fi
+		CURL_STATUS_CODE=$(curl -L "${CURL_RANGE[@]}" -b /db/cookie.jar -o /db/planet.osm.bz2 -w "%{http_code}" "${OVERPASS_PLANET_URL}")
 		# try again until it's allowed
 		while [ "$CURL_STATUS_CODE" = "429" ]; do
 			echo "Server responded with 429 Too many requests. Trying again in 5 minutes..."
 			sleep 300
-			CURL_STATUS_CODE=$(curl -L -b /db/cookie.jar -o /db/planet.osm.bz2 -w "%{http_code}" "${OVERPASS_PLANET_URL}")
+			CURL_STATUS_CODE=$(curl -L "${CURL_RANGE[@]}" -b /db/cookie.jar -o /db/planet.osm.bz2 -w "%{http_code}" "${OVERPASS_PLANET_URL}")
 		done
+		# If the range request was honored, aria2c should download concurrently.
+		# Any other response means curl already took full responsibility for the download.
+		if [[ $CURL_STATUS_CODE = "206" ]]; then
+			aria2c --max-connection-per-server=5 --allow-overwrite=true --load-cookies=/db/cookie.jar --dir=/ --out=/db/planet.osm.bz2 "${OVERPASS_PLANET_URL}"
+			CURL_STATUS_CODE=200
+		fi
 		# for `file:///` scheme curl returns `000` HTTP status code
 		if [[ $CURL_STATUS_CODE = "200" || $CURL_STATUS_CODE = "000" ]]; then
 			(
